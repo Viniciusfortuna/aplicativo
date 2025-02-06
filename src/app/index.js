@@ -24,7 +24,6 @@ export default function LoginBase() {
         if(response.status == 200){
             const result = await AsyncStorage.setItem(response.data.logusu, JSON.stringify(response.data));
             setLogin(response.data);
-            Alert.alert('Sucesso');
             router.push('/home');
         }
       } catch (error) {

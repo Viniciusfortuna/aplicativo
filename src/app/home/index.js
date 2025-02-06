@@ -2,19 +2,27 @@ import React, { useContext, useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
 import { Text } from 'react-native';
+import SincronizaClientes from '../functions/services/clients/sincronizaClientes'
+import { Alert } from "react-native";
 
 import LoginContext, { useLogin } from '../contexts/loginContext';
+import SincronizaAgentes from '../functions/services/agents/sincronizaAgentes';
 
 
 export default function App() {
   const [logusu, setLogUsu] = useState('');
   const {login, setLogin} = useContext(LoginContext);
-
   
   useEffect(()=>{
-    console.log(login.logusu)
+    fetchData();
     setLogUsu(login.logusu)
-  }, [])
+  }, []);
+
+  const fetchData = async () => {
+    const responseCli = await SincronizaClientes();
+    const responseAge = await SincronizaAgentes();
+  }
+
 
   return (
     <View style={style.container}>
