@@ -147,10 +147,7 @@ export default function FormularioBase({acao, table, dado, desc, msg, method, ms
             </Picker>
       </View>
       <Save style={style.linkStyle} acao={acao} table={table} data={data} desc={desc} msg={msg}/>
-
       <Sync style={style.linkStyle} method={method} dados={data} table={table2} msg={msgs}/>
-      
-      <LinkCustom></LinkCustom>
     </ScrollView>
   );
 }
