@@ -1,7 +1,8 @@
 import * as SQLite from 'expo-sqlite'
 export default async function migrations(){
     const db = await SQLite.openDatabaseAsync('producao');
-    const createMigrations = await db.execAsync(`
+    try {
+      const createMigrations = await db.execAsync(`
         CREATE TABLE IF NOT EXISTS agentes_saude 
         (codage INTEGER PRIMARY KEY AUTOINCREMENT, 
         nomage TEXT, 
@@ -44,9 +45,9 @@ export default async function migrations(){
         password TEXT,
         situsu TEXT DEFAULT 'A'); 
 
-        CREATE TABLE IF NOT EXISTS forms_producao_sync (
-          codfor TEXT PRIMARY KEY,  
-          codage INTEGER,
+        
+        CREATE TABLE IF NOT EXISTS forms_producao_nsync (
+          codfor INTEGER PRIMARY KEY AUTOINCREMENT,  
           codage INTEGER,
           codcli INTEGER,
           ns_codcli INTEGER,
@@ -60,7 +61,30 @@ export default async function migrations(){
           FOREIGN KEY (ns_codcli) REFERENCES clientes_producao_nsync (codcli),
           FOREIGN KEY (codsit) REFERENCES situacao (codsit),
           FOREIGN KEY (usuger) REFERENCES users (codusu)
+        );
+
+        CREATE TABLE IF NOT EXISTS forms_producao_sync (
+          codfor TEXT PRIMARY KEY,  
+          codage INTEGER,
+          codcli INTEGER,
+          ns_codcli INTEGER,
+          descri TEXT,
+          remrec TEXT,
+          codsit INTEGER,
+          usuger INTEGER,
+          sitsin TEXT,
+          datger TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (codage) REFERENCES agentes_saude (codage),
+          FOREIGN KEY (codcli) REFERENCES clientes_producao_sync (codcli),
+          FOREIGN KEY (ns_codcli) REFERENCES clientes_producao_nsync (codcli),
+          FOREIGN KEY (codsit) REFERENCES situacao (codsit),
+          FOREIGN KEY (usuger) REFERENCES users (codusu)
         );         
         `);
-
+        console.log('aqui')
+        return createMigrations;
+    } catch (error) {
+      console.log('aqui')
+        return error;
+    }
 }

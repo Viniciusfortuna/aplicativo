@@ -4,6 +4,8 @@ import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import sync_login from './functions/services/login/serviceSyncL';
 import LoginContext from './contexts/loginContext';
+import migrations from './functions/services/db/migrations';
+
 
 export default function LoginBase() {
 
@@ -29,6 +31,19 @@ export default function LoginBase() {
         console.log(error)
       }
   }
+
+  const migration = async () => {
+      try {
+        const response = await migrations();
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+  }
+
+  useEffect(()=>{
+      migration();
+  }, [])
 
   return (
     <ScrollView contentContainerStyle={style.container}>

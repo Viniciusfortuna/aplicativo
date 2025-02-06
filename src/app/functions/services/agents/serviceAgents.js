@@ -4,7 +4,7 @@ import * as SQLite from  'expo-sqlite'
 export default async function servicesAgents(action, table, method, data, router, sync){
 
     const db = await SQLite.openDatabaseAsync('producao');
-    const create = await db.execAsync('CREATE TABLE IF NOT EXISTS agentes_saude (codage INTEGER PRIMARY KEY AUTOINCREMENT, nomage TEXT, emaage TEXT, cpfage TEXT, telage TEXT, funage TEXT, datnas TEXT, datger TEXT, sitsin TEXT)');
+    // const create = await db.execAsync('CREATE TABLE IF NOT EXISTS agentes_saude (codage INTEGER PRIMARY KEY AUTOINCREMENT, nomage TEXT, emaage TEXT, cpfage TEXT, telage TEXT, funage TEXT, datnas TEXT, datger TEXT, sitsin TEXT)');
 
     var result;
     // const router = useRouter()

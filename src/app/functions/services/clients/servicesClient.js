@@ -68,7 +68,7 @@ export default async function services(action, table, method, data, router, sync
       if(action == 'INSERT'){
             if(table == 'clientes_producao_nsync'){
                 try {
-                    await db.execAsync('CREATE TABLE IF NOT EXISTS clientes_producao_nsync (codcli INTEGER PRIMARY KEY AUTOINCREMENT, nomcli TEXT, emacli TEXT, cpfcli TEXT, datnas TEXT, telcli TEXT, sitsin TEXT)');
+                    // await db.execAsync('CREATE TABLE IF NOT EXISTS clientes_producao_nsync (codcli INTEGER PRIMARY KEY AUTOINCREMENT, nomcli TEXT, emacli TEXT, cpfcli TEXT, datnas TEXT, telcli TEXT, sitsin TEXT)');
                     const result = await db.runAsync('INSERT INTO clientes_producao_nsync (nomcli, emacli, cpfcli, datnas, telcli) VALUES (?, ?, ?, ?, ?)', [data.nomcli, data.emacli, data.cpfcli, data.datnas, data.telcli]);
                     console.log(result.lastInsertRowId, result.changes);
                     router.push('/clients/read/not_sync');
@@ -79,7 +79,7 @@ export default async function services(action, table, method, data, router, sync
             }
             if(table == 'clientes_producao_sync'){
                 try {
-                    await db.execAsync('CREATE TABLE IF NOT EXISTS clientes_producao_sync (codcli INTEGER PRIMARY KEY AUTOINCREMENT, nomcli TEXT, emacli TEXT, cpfcli TEXT, datnas TEXT, telcli TEXT, sitsin TEXT)');
+                    // await db.execAsync('CREATE TABLE IF NOT EXISTS clientes_producao_sync (codcli INTEGER PRIMARY KEY AUTOINCREMENT, nomcli TEXT, emacli TEXT, cpfcli TEXT, datnas TEXT, telcli TEXT, sitsin TEXT)');
                     // Vai deletar ta tabela de pendentes para sincronização
                     const resultDel = await db.runAsync('DELETE FROM clientes_producao_nsync WHERE cpfcli = ?', [data.cpfcli]);
                     const result = await db.runAsync('INSERT INTO clientes_producao_sync (codcli, nomcli, emacli, cpfcli, datnas, telcli) VALUES (?, ?, ?, ?, ?, ?)', [data.codcli, data.nomcli, data.emacli, data.cpfcli, data.datnas, data.telcli]);
