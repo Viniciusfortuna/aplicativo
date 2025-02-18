@@ -1,20 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, TextInput, ScrollView } from 'react-native';
-import MaskInput, { Masks } from 'react-native-mask-input';
-import { Link, useLocalSearchParams } from 'expo-router';
-import services from '../../functions/services/clients/servicesClient';
-import LinkCustom from '../AtalhoListagem';
-import Save from './BotaoSave';
-import Sync from './BotaoSync';
-import servicesAgents from '../../functions/services/agents/serviceAgents';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+} from "react-native";
+import MaskInput, { Masks } from "react-native-mask-input";
+import { Link, useLocalSearchParams } from "expo-router";
+import services from "../../functions/services/clients/servicesClient";
+import LinkCustom from "../AtalhoListagem";
+import Save from "./BotaoSave";
+import Sync from "./BotaoSync";
+import servicesAgents from "../../functions/services/agents/serviceAgents";
 
-export default function AgenteBase({ acao, table, dado, desc, msg, method, msgs, table2 }) {
-  const [nomage, setNomage] = useState('');
-  const [emaage, setEmaage] = useState('');
-  const [cpfage, setCpfage] = useState('');
-  const [telage, setTelage] = useState('');
-  const [funage, setFunage] = useState('');
-  const [datnas, setDatnas] = useState('');
+export default function AgenteBase({
+  acao,
+  table,
+  dado,
+  desc,
+  msg,
+  method,
+  msgs,
+  table2,
+}) {
+  const [nomage, setNomage] = useState("");
+  const [emaage, setEmaage] = useState("");
+  const [cpfage, setCpfage] = useState("");
+  const [telage, setTelage] = useState("");
+  const [funage, setFunage] = useState("");
+  const [datnas, setDatnas] = useState("");
   const { id } = useLocalSearchParams();
 
   const data = {
@@ -27,9 +43,9 @@ export default function AgenteBase({ acao, table, dado, desc, msg, method, msgs,
     datnas: datnas || null,
   };
 
-  console.log('Ação é ' + acao);
+  console.log("Ação é " + acao);
 
-  if (acao !== 'INSERT') {
+  if (acao !== "INSERT") {
     useEffect(() => {
       fetchData();
     }, []);
@@ -38,15 +54,19 @@ export default function AgenteBase({ acao, table, dado, desc, msg, method, msgs,
   }
 
   const fetchData = async () => {
-    const result = await servicesAgents('SELECT', table, 'ID', id);
-    setNomage(result[0]?.nomage || '');
-    setEmaage(result[0]?.emaage || '');
-    setCpfage(result[0]?.cpfage || '');
-    setFunage(result[0]?.funage || '');
-    setTelage(result[0]?.telage || '');
+    const result = await servicesAgents("SELECT", table, "ID", id);
+    setNomage(result[0]?.nomage || "");
+    setEmaage(result[0]?.emaage || "");
+    setCpfage(result[0]?.cpfage || "");
+    setFunage(result[0]?.funage || "");
+    setTelage(result[0]?.telage || "");
     if (result[0].datnas) {
-      var dataFormatada = new Date(result[0].datnas).toLocaleDateString('pt-BR');
-      setDatnas(dataFormatada === 'Invalid Date' ? result[0].datnas : dataFormatada);
+      var dataFormatada = new Date(result[0].datnas).toLocaleDateString(
+        "pt-BR"
+      );
+      setDatnas(
+        dataFormatada === "Invalid Date" ? result[0].datnas : dataFormatada
+      );
     }
   };
 
@@ -110,8 +130,21 @@ export default function AgenteBase({ acao, table, dado, desc, msg, method, msgs,
         />
       </View>
 
-      <Save style={style.linkStyle} acao={acao} table={table} data={data} desc={desc} msg={msg} />
-      <Sync style={style.linkStyle} method={method} dados={data} table={table2} msg={msgs} />
+      <Save
+        style={style.linkStyle}
+        acao={acao}
+        table={table}
+        data={data}
+        desc={desc}
+        msg={msg}
+      />
+      <Sync
+        style={style.linkStyle}
+        method={method}
+        dados={data}
+        table={table2}
+        msg={msgs}
+      />
       <LinkCustom />
     </ScrollView>
   );

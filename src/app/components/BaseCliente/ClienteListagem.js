@@ -1,14 +1,14 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Button } from 'react-native';
-import { useState, useEffect } from 'react';
-import { Link } from 'expo-router';
-import services from '../../functions/services/clients/servicesClient';
+import React from "react";
+import { View, Text, StyleSheet, FlatList, Button } from "react-native";
+import { useState, useEffect } from "react";
+import { Link } from "expo-router";
+import services from "../../functions/services/clients/servicesClient";
 
-export default function ClienteListagem({table, type}) {
+export default function ClienteListagem({ table, type }) {
   const [clients, setClients] = useState([]);
 
   const getData = async () => {
-    const data = await services('SELECT', table, 'ALL', '');
+    const data = await services("SELECT", table, "ALL", "");
     console.log(data + "clientes");
     setClients(data);
   };
@@ -30,11 +30,18 @@ export default function ClienteListagem({table, type}) {
         renderItem={({ item }) => (
           <View style={style.itemContainer}>
             <Text style={style.itemText}>{item.nomcli}</Text>
-            <Link href={'/clients/update/'+type+'/id/' + item.codcli} style={style.editButton}>Editar</Link>
+            <Link
+              href={"/clients/update/" + type + "/id/" + item.codcli}
+              style={style.editButton}
+            >
+              Editar
+            </Link>
           </View>
         )}
       />
-      <Link style={style.linkStyle} href={'/'}>Voltar</Link>
+      <Link style={style.linkStyle} href={"/"}>
+        Voltar
+      </Link>
     </View>
   );
 }
@@ -42,55 +49,55 @@ export default function ClienteListagem({table, type}) {
 const style = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F3FF',
+    backgroundColor: "#F3F3FF",
     paddingTop: 20,
     paddingHorizontal: 10,
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#E0E0E0', // Cor de fundo do cabeçalho
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#E0E0E0", // Cor de fundo do cabeçalho
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
-    marginBottom: 10
+    marginBottom: 10,
   },
   headerText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     flex: 1,
-    textAlign:'center'
+    textAlign: "center",
   },
   flatlist: {
     flex: 1,
-    width: '100%',
-    gap:10
+    width: "100%",
+    gap: 10,
   },
   itemContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ddd',
-    shadowColor: '#000',
+    borderColor: "#ddd",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5, // Para dispositivos Android
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   itemText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     flex: 1,
   },
   editButton: {
     fontSize: 16,
-    color: '#007BFF',
-    fontWeight: 'bold',
-    textDecorationLine: 'underline',
+    color: "#007BFF",
+    fontWeight: "bold",
+    textDecorationLine: "underline",
   },
   linkStyle: {
     width: 250,
@@ -109,6 +116,6 @@ const style = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    gap:20
-  }
+    gap: 20,
+  },
 });

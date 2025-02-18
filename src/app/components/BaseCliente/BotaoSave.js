@@ -1,38 +1,31 @@
-import { Pressable, Text, StyleSheet, Alert } from "react-native"
+import { Pressable, Text, StyleSheet, Alert } from "react-native";
 // import * as SQLLite from 'expo-sqlite'
-import * as SQLLite from 'expo-sqlite';
+import * as SQLLite from "expo-sqlite";
 import services from "../../functions/services/clients/servicesClient";
 import { useRouter } from "expo-router";
 
+export default function Save({ acao, table, method, data, desc, msg }) {
+  const router = useRouter();
 
-
-
-export default  function Save({acao, table, method, data, desc, msg}){
-    const router = useRouter();
-
-    const SaveData = async () =>{
-        console.log(method + "aqui")
-        console.log(data)
-        try {
-            const result = await services(acao, table, method, data, router, 0);
-            // router.push('/clients/read/not_sync');
-            Alert.alert('Sucesso', msg + ' efetuada com sucesso');
-        } catch (error) {
-            console.log(error)
-        }
-        console.log(result);
+  const SaveData = async () => {
+    console.log(method + "aqui");
+    console.log(data);
+    try {
+      const result = await services(acao, table, method, data, router, 0);
+      // router.push('/clients/read/not_sync');
+      Alert.alert("Sucesso", msg + " efetuada com sucesso");
+    } catch (error) {
+      console.log(error);
     }
+    console.log(result);
+  };
 
-    return (
-        <Pressable
-            style={style.linkStyle}
-            onPress={SaveData}
-        >
-            <Text style={style.linkStyle}>{desc}</Text>
-        </Pressable>
-    )
+  return (
+    <Pressable style={style.linkStyle} onPress={SaveData}>
+      <Text style={style.linkStyle}>{desc}</Text>
+    </Pressable>
+  );
 }
-
 
 const style = StyleSheet.create({
   linkStyle: {
@@ -52,5 +45,5 @@ const style = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  }
+  },
 });

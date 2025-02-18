@@ -1,115 +1,115 @@
-import { Pressable, Text, StyleSheet, Alert } from "react-native"
+import { Pressable, Text, StyleSheet, Alert } from "react-native";
 // import * as SQLLite from 'expo-sqlite'
-import * as SQLLite from 'expo-sqlite';
+import * as SQLLite from "expo-sqlite";
 import sync_clients from "../../functions/services/clients/serviceSync";
 import { useRouter } from "expo-router";
 import services from "../../functions/services/clients/servicesClient";
-import { parse, isValid } from 'date-fns';
+import { parse, isValid } from "date-fns";
 
+export default function Sync({ method, table, dados, msg }) {
+  const router = useRouter();
+  // var dadosAnt = dados;
+  var methodDb;
 
-export default  function Sync({method, table, dados, msg}){
-    const router = useRouter();
-    // var dadosAnt = dados;
-    var methodDb;
+  // console.log(dados)
+  const SyncData = async () => {
+    // delete dados.codcli;
+    // const data = await sync_clients(method, dados);
 
-
-    // console.log(dados)
-    const SyncData = async () =>{
-        // delete dados.codcli;
-        // const data = await sync_clients(method, dados);
-
-        // console.log(data)
-        // console.log(data.data.cliente)
-        // console.log(data.status)
-        console.log(dados.datnas)
-        if (dados.datnas) {
-            
-            try {
-                // Verifica se já está no formato ISO
-                if (dados.datnas.includes('T')) {
-                    const dateISO = new Date(dados.datnas);
-                    if (isValid(dateISO)) {
-                        dados.datnas = dateISO.toISOString(); // Confirma que está no formato correto
-                    }
-                }
-                
-                // Caso não esteja no formato ISO, tenta fazer parsing de outro formato
-                const formattedDate = parse(dados.datnas, 'dd/MM/yyyy', new Date());
-                if (isValid(formattedDate)) {
-                    dados.datnas = formattedDate.toISOString(); // Converte para ISO
-                } else {
-                    console.log('Data inválida:', dados.datnas);
-                }
-            } catch (error) {
-                console.log('Erro ao formatar a data:', error);
-            }
+    // console.log(data)
+    // console.log(data.data.cliente)
+    // console.log(data.status)
+    console.log(dados.datnas);
+    if (dados.datnas) {
+      try {
+        // Verifica se já está no formato ISO
+        if (dados.datnas.includes("T")) {
+          const dateISO = new Date(dados.datnas);
+          if (isValid(dateISO)) {
+            dados.datnas = dateISO.toISOString(); // Confirma que está no formato correto
+          }
         }
 
-         console.log(dados.datnas)
-         console.log('novo')
-        
-
-        if (method === 'POST'){
-            delete dados.codcli;
-            console.log('aqui no post')
-            methodDb = 'INSERT'
+        // Caso não esteja no formato ISO, tenta fazer parsing de outro formato
+        const formattedDate = parse(dados.datnas, "dd/MM/yyyy", new Date());
+        if (isValid(formattedDate)) {
+          dados.datnas = formattedDate.toISOString(); // Converte para ISO
+        } else {
+          console.log("Data inválida:", dados.datnas);
         }
-        else if (method === 'PUT'){
-            methodDb = 'UPDATE'
-            console.log('aqui no put')
-            console.log(dados.datnas)
-        }
-        else if (method === 'DELETE'){
-            methodDb = 'DELETE'
-        }
-        else if (method === 'GET'){
-            methodDb = 'SELECT'
-        }
-
-        var data;
-        // console.log(dados + "aquinovo")
-        try {
-            data = await sync_clients(method, dados);
-            console.log(data)
-            console.log('deu')
-        } catch (error) {
-            console.log(error)
-        }
-        
-        console.log(data.status)
-        
-
-        // console.log(data)
-        // console.log(data.data.cliente)
-        // console.log(data.status)
-
-        if(data.status == 200){
-            try {
-                if(method === 'POST'){
-                    const result = await services('INSERT', table, '', data.data.cliente, router);
-                }
-                else if (method === 'PUT'){
-                    const result = await services('UPDATE', table, '', data.codcli, router, 1);
-                }
-                Alert.alert('Sucesso', msg + ' efetuada com sucesso');
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        else {
-            console.log(dados)
-            console.log(data)
-        }
+      } catch (error) {
+        console.log("Erro ao formatar a data:", error);
+      }
     }
 
-    return (
-        <Pressable
-            style={style.linkStyle}
-            onPress={SyncData}
-        >
-            <Text style={style.linkStyle}>Sincronizar</Text>
-        </Pressable>
-    )
+    console.log(dados.datnas);
+    console.log("novo");
+
+    if (method === "POST") {
+      delete dados.codcli;
+      console.log("aqui no post");
+      methodDb = "INSERT";
+    } else if (method === "PUT") {
+      methodDb = "UPDATE";
+      console.log("aqui no put");
+      console.log(dados.datnas);
+    } else if (method === "DELETE") {
+      methodDb = "DELETE";
+    } else if (method === "GET") {
+      methodDb = "SELECT";
+    }
+
+    var data;
+    // console.log(dados + "aquinovo")
+    try {
+      data = await sync_clients(method, dados);
+      console.log(data);
+      console.log("deu");
+    } catch (error) {
+      console.log(error);
+    }
+
+    console.log(data.status);
+
+    // console.log(data)
+    // console.log(data.data.cliente)
+    // console.log(data.status)
+
+    if (data.status == 200) {
+      try {
+        if (method === "POST") {
+          const result = await services(
+            "INSERT",
+            table,
+            "",
+            data.data.cliente,
+            router
+          );
+        } else if (method === "PUT") {
+          const result = await services(
+            "UPDATE",
+            table,
+            "",
+            data.codcli,
+            router,
+            1
+          );
+        }
+        Alert.alert("Sucesso", msg + " efetuada com sucesso");
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log(dados);
+      console.log(data);
+    }
+  };
+
+  return (
+    <Pressable style={style.linkStyle} onPress={SyncData}>
+      <Text style={style.linkStyle}>Sincronizar</Text>
+    </Pressable>
+  );
 }
 
 const style = StyleSheet.create({
@@ -130,5 +130,5 @@ const style = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-  }
+  },
 });
