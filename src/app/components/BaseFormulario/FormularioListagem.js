@@ -15,6 +15,7 @@ export default function FormulariosListagem({table, type}) {
 
   useEffect(() => {
     getData();
+    console.log(forms)
   }, []);
 
   return (

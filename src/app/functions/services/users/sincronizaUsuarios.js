@@ -16,7 +16,7 @@ export default async function SincronizaUsuarios(){
             console.log(item.codusu)
         });
 
-        const data = await sync_clients('GET', '');
+        const data = await sync_users('GET', '');
         if (data.length > 0) {
             data.forEach((item) => {
             const result = servicesUsers('SELECT', 'users', 'ID', item.codusu, '', '');

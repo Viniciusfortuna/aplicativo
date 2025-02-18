@@ -5,9 +5,6 @@ import services from "../../functions/services/clients/servicesClient";
 import { useRouter } from "expo-router";
 import servicesForms from "../../functions/services/forms/servicesForms";
 
-
-
-
 export default  function Save({acao, table, method, data, desc, msg}){
     const router = useRouter();
 

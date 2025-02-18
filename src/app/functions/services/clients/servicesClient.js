@@ -7,8 +7,8 @@ export default async function services(action, table, method, data, router, sync
     var result;
     // const router = useRouter()
 
-    console.log(action)
-    console.log('id aqui' + data.codcli)
+    // console.log(action)
+    // console.log('id aqui' + data.codcli)
     if(action == 'SELECT'){
             if(table == 'clientes_producao_nsync'){
                 if(method == 'ID'){

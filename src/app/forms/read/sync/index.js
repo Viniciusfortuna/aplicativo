@@ -3,6 +3,6 @@ import FormulariosListagem from "../../../components/BaseFormulario/FormularioLi
 
 export default function ListNotSync(){
   return (
-      <FormulariosListagem table={'clientes_producao_sync'} type={'sync'}></FormulariosListagem>
+      <FormulariosListagem table={'forms_producao_sync'} type={'sync'}></FormulariosListagem>
   );
 }

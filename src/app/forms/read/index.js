@@ -74,10 +74,10 @@ export default function App() {
         placeholder="Selecione uma opção"
       /> */}
 
-      <Link style={style.buttonLink} href="/clients/read/not_sync">
+      <Link style={style.buttonLink} href="/forms/read/not_sync">
         Não integrado
       </Link>
-      <Link style={style.buttonLink} href="/clients/read/sync">
+      <Link style={style.buttonLink} href="/forms/read/sync">
         Integrado
       </Link>
       <TouchableOpacity style={style.buttonLink} onPress={sync_api}>

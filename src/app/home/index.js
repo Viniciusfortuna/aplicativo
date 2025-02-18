@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert, Modal, ActivityIndicator } from 'react-native';
 import { Link } from 'expo-router';
 import { Text } from 'react-native';
-import SincronizaClientes from '../functions/services/clients/sincronizaClientes'
-import { Alert } from "react-native";
-
+import SincronizaClientes from '../functions/services/clients/sincronizaClientes';
+import SincronizaUsuarios from '../functions/services/users/sincronizaUsuarios';
+import SincronizaSituacao from '../functions/services/situations/sincronizaSituacao';
 import LoginContext, { useLogin } from '../contexts/loginContext';
 import SincronizaAgentes from '../functions/services/agents/sincronizaAgentes';
 
@@ -12,21 +12,45 @@ import SincronizaAgentes from '../functions/services/agents/sincronizaAgentes';
 export default function App() {
   const [logusu, setLogUsu] = useState('');
   const {login, setLogin} = useContext(LoginContext);
+  const [loading, setLoading] = useState(false);
+  
   
   useEffect(()=>{
+    setLoading(true);
     fetchData();
-    setLogUsu(login.logusu)
+    setLogUsu(login.logusu);
+    setLoading(false);
   }, []);
 
   const fetchData = async () => {
+  
     const responseCli = await SincronizaClientes();
     const responseAge = await SincronizaAgentes();
+    const responseUse = await SincronizaUsuarios();
+    console.log(responseUse)
+    const responseSit = await SincronizaSituacao();
+
+    console.log('resposta usu:'+ responseUse);
+    console.log('resposta age:'+ responseAge);
+    console.log('resposta cli:'+ responseCli);
+    console.log('resposta sit:'+ responseSit);
+
+    if(responseAge === 'ok' && responseCli === 'ok' && responseUse === 'ok' && responseSit === 'ok') {
+      Alert.alert('Sucesso', 'Sincronização realizada com sucesso!');
+    }
   }
 
 
   return (
     <View style={style.container}>
-      <Text> Ola {logusu}</Text>
+      <Modal transparent={true} animationType="fade" visible={loading}>
+          <View style={style.container}>
+              <ActivityIndicator size="large" color="#FFF" />
+              <Text style={style.label}>Carregando...</Text>
+          </View>
+      </Modal>
+      
+      <Text style={style.label}> Olá, {logusu}</Text>
       <Link style={style.buttonLink} href="/forms">
         Formulários
       </Link>
@@ -36,9 +60,6 @@ export default function App() {
       <Link style={style.buttonLink} href="clients/">
         Clientes
       </Link>
-      {/* <Link style={style.buttonLink} href="/clients/read">
-        Consultar Clientes
-      </Link> */}
     </View>
   );
 }
@@ -49,11 +70,11 @@ const style = StyleSheet.create({
     backgroundColor: "#F3F3FF",
     alignItems: "center",
     justifyContent: "center",
-    gap: 15, // Espaçamento entre os botões
+    gap: 8, // Espaçamento entre os botões
     paddingHorizontal: 20,
   },
   buttonLink: {
-    width: 250,
+    width: '100%',
     height: 50,
     backgroundColor: "#FFFFFF",
     color: "#000", // Cor do texto
@@ -68,4 +89,12 @@ const style = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5, // Sombra no Android
   },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 5,
+    alignItems:'center',
+    justifyContent: 'center',
+  }
 });

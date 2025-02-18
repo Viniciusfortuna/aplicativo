@@ -6,6 +6,7 @@ import services from '../../functions/services/clients/servicesClient';
 import LinkCustom from '../AtalhoListagem';
 import Save from './BotaoSave';
 import Sync from './BotaoSync';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ClienteBase({acao, table, dado, desc, msg, method, msgs, table2}) {
   const [nomcli, setNomCli] = useState('');
@@ -50,7 +51,8 @@ export default function ClienteBase({acao, table, dado, desc, msg, method, msgs,
   };
 
   return (
-    <ScrollView contentContainerStyle={style.container}>
+    <SafeAreaProvider>
+      <SafeAreaView style={style.container}>
       <View style={style.inputContainer}>
         <Text style={style.label}>Nome</Text>
         <TextInput
@@ -105,7 +107,8 @@ export default function ClienteBase({acao, table, dado, desc, msg, method, msgs,
       <Sync style={style.linkStyle} method={method} dados={data} table={table2} msg={msgs}/>
       
       <LinkCustom></LinkCustom>
-    </ScrollView>
+      </SafeAreaView>
+      </SafeAreaProvider>
   );
 }
 
@@ -116,7 +119,7 @@ const style = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 20,
     paddingHorizontal: 15,
-    gap: 20,
+    gap: 10,
   },
   inputContainer: {
     width: "100%",

@@ -9,7 +9,7 @@ import sync_forms from "../../functions/services/forms/servicesSyncF";
 import servicesForms from "../../functions/services/forms/servicesForms";
 
 
-export default  function Sync({method, table, dados, msg}){
+export default  function Sync({method, table, dados, msg, dataDel}){
     const router = useRouter();
     // var dadosAnt = dados;
     var methodDb;
@@ -49,10 +49,10 @@ export default  function Sync({method, table, dados, msg}){
         if(data.status == 200){
             try {
                 if(method === 'POST'){
-                    const result = await servicesForms('INSERT', table, '', data.data.codfor, router);
+                    const result = await servicesForms('INSERT', table, '', data.data.forms, router, '', dataDel);
                 }
                 else if (method === 'PUT'){
-                    const result = await services('UPDATE', table, '', data.codfor, router, 1);
+                    const result = await servicesForms('UPDATE', table, '', data.codfor, router, 1);
                 }
                 Alert.alert('Sucesso', msg + ' efetuada com sucesso');
             } catch (error) {

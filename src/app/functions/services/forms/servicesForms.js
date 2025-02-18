@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import * as SQLite from  'expo-sqlite'
 
-export default async function servicesForms(action, table, method, data, router, sync){
+export default async function servicesForms(action, table, method, data, router, sync, dataDel){
 
     const db = await SQLite.openDatabaseAsync('producao');
 
@@ -64,7 +64,7 @@ export default async function servicesForms(action, table, method, data, router,
                 try {
                     const result = await db.runAsync('INSERT INTO forms_producao_nsync (codfor, codage, codcli, ns_codcli, descri, remrec, codsit, usuger) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [data.codfor, data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.usuger]);
                     console.log(result.lastInsertRowId, result.changes);
-                    router.push('/forms/read/nsync');
+                    router.push('/forms/read/not_sync');
                 } catch (error) {
                     console.log('erro ao inserir ' +  error);
                 }
@@ -74,8 +74,11 @@ export default async function servicesForms(action, table, method, data, router,
                 try {
                     // await db.execAsync('CREATE TABLE IF NOT EXISTS forms_producao_sync (codfor INTEGER PRIMARY KEY AUTOINCREMENT, nomcli TEXT, emacli TEXT, cpfcli TEXT, datnas TEXT, telcli TEXT, sitsin TEXT)');
                     // Vai deletar ta tabela de pendentes para sincronização
-                    const resultDel = await db.runAsync('DELETE FROM forms_producao_nsync WHERE codfor = ?', [data.codfor]);
-                    const result = await db.runAsync('INSERT INTO forms_producao_nsync (codfor, codage, codcli, ns_codcli, descri, remrec, codsit, usuger) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [data.codfor, data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.usuger]);
+                    console.log('dado aqui de inserção')
+                    console.log(data)
+                    console.log('dado aqui de inserção')
+                    const resultDel = await db.runAsync('DELETE FROM forms_producao_nsync WHERE codfor = ?', [dataDel]);
+                    const result = await db.runAsync('INSERT INTO forms_producao_sync (codfor, codage, codcli, ns_codcli, descri, remrec, codsit, usuger) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [data.codfor, data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.usuger]);
                     router.push('/forms/read/sync');
                     console.log(result.lastInsertRowId, result.changes);
                 } catch (error) {
@@ -88,10 +91,11 @@ export default async function servicesForms(action, table, method, data, router,
         if(action == 'UPDATE'){
             if(table == 'forms_producao_nsync'){
                 try {
-                    const result = await db.runAsync('UPDATE forms_producao_nsync set codage = ?, codcli = ?, ns_codcli = ?, descri = ?, remrec = ?, codsit ? where codfor = ?', [data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.codfor]);
+                    console.log(data)
+                    const result = await db.runAsync('UPDATE forms_producao_nsync set codage = ?, codcli = ?, ns_codcli = ?, descri = ?, remrec = ?, codsit = ? where codfor = ?', [data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.codfor]);
                     console.log(result.changes);
                 } catch (error) {
-                    console.log('erro ao atualizar ' +  error);
+                    console.log('erro ao atualizar noaoaoao ' +  error);
                 }
                 console.log(result); 
             }
@@ -102,7 +106,7 @@ export default async function servicesForms(action, table, method, data, router,
                         const result = await db.runAsync('UPDATE forms_producao_sync set sitsin = 2 where codfor = ?', [data]);
                     }
                     else {
-                        const result = await db.runAsync('UPDATE forms_producao_sync set codage = ?, codcli = ?, ns_codcli = ?, descri = ?, remrec = ?, codsit ?, sitsin = 1 where codfor = ?', [data.nomcli, data.emacli, data.cpfcli, data.datnas, data.telcli, data.codfor]);
+                        const result = await db.runAsync('UPDATE forms_producao_sync set codage = ?, codcli = ?, ns_codcli = ?, descri = ?, remrec = ?, codsit ?, sitsin = 1 where codfor = ?', [data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.codfor]);
                     }
                     
                 } catch (error) {

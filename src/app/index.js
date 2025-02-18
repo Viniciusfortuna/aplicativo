@@ -1,16 +1,22 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Pressable, StyleSheet, TextInput, ScrollView, Alert } from 'react-native';
+import { View, Text, Pressable, StyleSheet, TextInput, ScrollView, Alert, Button, Modal, ActivityIndicator } from 'react-native';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import sync_login from './functions/services/login/serviceSyncL';
 import LoginContext from './contexts/loginContext';
 import migrations from './functions/services/db/migrations';
+import Icon from 'react-native-vector-icons/Feather'; // Ícone de olho
+import IconB from 'react-native-vector-icons/FontAwesome'; // Ícone de olho
+import ModalLoading from './components/Modal/modalLoading';
 
 
 export default function LoginBase() {
 
   const router = useRouter();
   const {login, setLogin} = useContext(LoginContext);
+  const [foco, setFoco] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [userLogin, setUserLogin] = useState({
     logusu: "",
@@ -19,6 +25,7 @@ export default function LoginBase() {
 
   const Enter = async () => {
       try {
+        setLoading(true)
         const response = await sync_login(userLogin, 'POST');
         console.log(response)
         if(response.status == 200){
@@ -26,8 +33,13 @@ export default function LoginBase() {
             setLogin(response.data);
             router.push('/home');
         }
+        else {
+          Alert.alert('Erro', 'Credenciais inválidas');
+          setLoading(false)
+        }
       } catch (error) {
-        console.log(error)
+        Alert.alert('ERRO', 'Não foi possível completar sua solicitação');
+        setLoading(false)
       }
   }
 
@@ -41,15 +53,19 @@ export default function LoginBase() {
   }
 
   useEffect(()=>{
+      setLoading(false)
       migration();
   }, [])
 
   return (
     <ScrollView contentContainerStyle={style.container}>
+      <ModalLoading loading={loading}></ModalLoading>
       <View style={style.inputContainer}>
         <Text style={style.label}>Login</Text>
         <TextInput
-          style={style.inputText}
+          style={foco === 'logusu' ? style.LayoutEvent : style.inputText}
+          onFocus={(e)=>setFoco('logusu')}
+          onBlur={(e)=>setFoco(false)}
           value={userLogin.logusu}
           onChangeText={(e)=> setUserLogin({...userLogin, logusu: e})}
           placeholder="Digite seu nome"
@@ -57,17 +73,27 @@ export default function LoginBase() {
       </View>
       <View style={style.inputContainer}>
         <Text style={style.label}>Senha</Text>
-        <TextInput
-          keyboardType='visible-password'
-          style={style.inputText}
-          value={userLogin.password}
-          onChangeText={(e)=> setUserLogin({...userLogin, password: e})}
-          ></TextInput>
+        <View style={style.inputLogin}>
+            <TextInput
+              keyboardType='visible-password'
+              onFocus={(e)=>setFoco('password')}
+              onBlur={(e)=>setFoco(false)}
+              secureTextEntry={mostrarSenha}
+              style={foco === 'password' ? style.LayoutEvent : style.inputText}
+              value={userLogin.password}
+              onChangeText={(e)=> setUserLogin({...userLogin, password: e})}
+              ></TextInput>
+              <Pressable onPress={() => setMostrarSenha(!mostrarSenha)}>
+                  <Icon name={mostrarSenha ? "eye-off" : "eye"} size={24} color="#665" />
+              </Pressable>
+        </View>
       </View>
       <Pressable
         style={style.linkStyle}
         onPress={Enter}>
-          <Text>Entrar</Text>
+          <Text style={style.label}>
+            Entrar
+          </Text>
       </Pressable>
     </ScrollView>
   );
@@ -76,38 +102,48 @@ export default function LoginBase() {
 const style = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F3F3FF",
+    backgroundColor: "#F5F5F5",
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 20,
     paddingHorizontal: 15,
     gap: 20,
-    borderWidth: 1
+    borderWidth: 1,
 
   },
   inputContainer: {
     width: "100%",
-    alignItems: "flex-start",
+    alignItems: "center",
     marginBottom: 15,
+  },
+  inputLogin: {
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 15,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 13
   },
   label: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
+    alignItems:'center',
+    justifyContent: 'center',
   },
   inputText: {
-    width: "100%",
+    width: "80%",
     height: 40,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
     paddingHorizontal: 10,
     fontSize: 16,
-    backgroundColor: "#FFF",
+    backgroundColor: "#F3F4F6",
   },
   linkStyle: {
-    width: 250,
+    width: 200,
     height: 40,
     backgroundColor: "#FFF",
     borderRadius: 12,
@@ -124,4 +160,14 @@ const style = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  LayoutEvent: {
+    width: "80%",
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    backgroundColor: "#D1D5DB",
+  }
 });

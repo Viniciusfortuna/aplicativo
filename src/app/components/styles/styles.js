@@ -1,22 +1,4 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
-
-export default function App() {
-  return (
-    <View style={style.container}>
-      <Link style={style.buttonLink} href="/forms/create">
-        Cadastrar
-      </Link>
-      <Link style={style.buttonLink} href="/forms/read">
-        Consultar
-      </Link>
-      {/* <Link style={style.buttonLink} href="/clients/read">
-        Consultar Clientes
-      </Link> */}
-    </View>
-  );
-}
+import { StyleSheet } from "react-native";
 
 const style = StyleSheet.create({
   container: {
@@ -24,11 +6,11 @@ const style = StyleSheet.create({
     backgroundColor: "#F3F3FF",
     alignItems: "center",
     justifyContent: "center",
-    gap: 15, // Espaçamento entre os botões
+    gap: 8, // Espaçamento entre os botões
     paddingHorizontal: 20,
   },
   buttonLink: {
-    width: 250,
+    width: '100%',
     height: 50,
     backgroundColor: "#FFFFFF",
     color: "#000", // Cor do texto
@@ -43,4 +25,14 @@ const style = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5, // Sombra no Android
   },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 5,
+    alignItems:'center',
+    justifyContent: 'center',
+  }
 });
+
+export default style;
