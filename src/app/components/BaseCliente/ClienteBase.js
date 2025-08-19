@@ -41,7 +41,6 @@ export default function ClienteBase({
     telcli: telcli,
   };
 
-  console.log("acao é " + acao);
   if (acao != "INSERT") {
     useEffect(() => {
       fetchData();
@@ -115,6 +114,7 @@ export default function ClienteBase({
             mask={Masks.BRL_PHONE}
           />
         </View>
+{/*         
         <Save
           style={style.linkStyle}
           acao={acao}
@@ -130,7 +130,7 @@ export default function ClienteBase({
           dados={data}
           table={table2}
           msg={msgs}
-        />
+        /> */}
 
         <LinkCustom></LinkCustom>
       </SafeAreaView>

@@ -130,7 +130,7 @@ export default function AgenteBase({
         />
       </View>
 
-      <Save
+      {/* <Save
         style={style.linkStyle}
         acao={acao}
         table={table}
@@ -144,7 +144,8 @@ export default function AgenteBase({
         dados={data}
         table={table2}
         msg={msgs}
-      />
+      /> */}
+      
       <LinkCustom />
     </ScrollView>
   );

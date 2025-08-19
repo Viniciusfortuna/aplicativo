@@ -148,71 +148,26 @@ export default function FormularioBase({
       </View>
 
       <View style={style.inputContainer}>
-        <Text style={style.label}>Cliente Sincronizado?</Text>
+        <Text style={style.label}>Selecionar cliente</Text>
         <Dropdown
           style={style.dropdown}
           placeholderStyle={style.placeholderStyle}
           selectedTextStyle={style.selectedTextStyle}
           inputSearchStyle={style.inputSearchStyle}
           iconStyle={style.iconStyle}
-          data={[
-            { label: "Sim", value: "sim" },
-            { label: "Não", value: "não" },
-          ]}
+          data={clientes}
           search
-          labelField="label"
-          valueField="value"
+          labelField="nomcli"
+          valueField="codcli"
           placeholder="Select item"
           searchPlaceholder="Search..."
-          value={sincronizado}
+          value={codcli}
           onChange={(item) => {
-            setSincronizado(item);
+            setCodCli(item.codcli);
           }}
         />
       </View>
-      {sincronizado.value == "sim" ? (
-        <View style={style.inputContainer}>
-          <Text style={style.label}>Selecionar cliente</Text>
-          <Dropdown
-            style={style.dropdown}
-            placeholderStyle={style.placeholderStyle}
-            selectedTextStyle={style.selectedTextStyle}
-            inputSearchStyle={style.inputSearchStyle}
-            iconStyle={style.iconStyle}
-            data={clientes}
-            search
-            labelField="nomcli"
-            valueField="codcli"
-            placeholder="Select item"
-            searchPlaceholder="Search..."
-            value={codcli}
-            onChange={(item) => {
-              setCodCli(item.codcli);
-            }}
-          />
-        </View>
-      ) : (
-        <View style={style.inputContainer}>
-          <Text style={style.label}>Selecionar cliente</Text>
-          <Dropdown
-            style={style.dropdown}
-            placeholderStyle={style.placeholderStyle}
-            selectedTextStyle={style.selectedTextStyle}
-            inputSearchStyle={style.inputSearchStyle}
-            iconStyle={style.iconStyle}
-            data={clientesN}
-            search
-            labelField="nomcli"
-            valueField="codcli"
-            placeholder="Select item"
-            searchPlaceholder="Search..."
-            value={ns_codcli}
-            onChange={(item) => {
-              setNs_Codcli(item.codcli);
-            }}
-          />
-        </View>
-      )}
+
       <View style={style.inputContainer}>
         <Text style={style.label}>Descrição</Text>
         <TextInput

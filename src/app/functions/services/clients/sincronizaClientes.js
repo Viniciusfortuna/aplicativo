@@ -27,8 +27,8 @@ export default async function SincronizaClientes(){
                 }
                 else {
                     const result = services('INSERT', 'clientes_producao_sync', '', item, '', '');
+                    console.log(item)
                 }
-                console.log('passei na sinc dos cli')
             })
             });
         }

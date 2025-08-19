@@ -14,14 +14,6 @@ export default async function migrations(){
         datger TEXT, 
         sitsin TEXT);   
                 
-        CREATE TABLE IF NOT EXISTS clientes_producao_nsync 
-        (codcli INTEGER PRIMARY KEY AUTOINCREMENT, 
-        nomcli TEXT, 
-        emacli TEXT, 
-        cpfcli TEXT, 
-        datnas TEXT, 
-        telcli TEXT, 
-        sitsin TEXT); 
                                             
         CREATE TABLE IF NOT EXISTS clientes_producao_sync 
         (codcli INTEGER PRIMARY KEY AUTOINCREMENT, 
