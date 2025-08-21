@@ -1,0 +1,1 @@
+export const apiRaiz = 'https://api-agents-health.onrender.com/';

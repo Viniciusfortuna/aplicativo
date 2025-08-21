@@ -5,9 +5,6 @@ import { Link } from "expo-router";
 export default function App() {
   return (
     <View style={style.container}>
-      <Link style={style.buttonLink} href="/agents/create">
-        Cadastrar
-      </Link>
       <Link style={style.buttonLink} href="/agents/read">
         Consultar
       </Link>

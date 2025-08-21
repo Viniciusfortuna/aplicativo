@@ -1,82 +1,99 @@
 import * as SQLite from 'expo-sqlite'
 export default async function migrations(){
     const db = await SQLite.openDatabaseAsync('producao');
+
     try {
       const createMigrations = await db.execAsync(`
-        CREATE TABLE IF NOT EXISTS agentes_saude 
-        (codage INTEGER PRIMARY KEY AUTOINCREMENT, 
-        nomage TEXT, 
-        emaage TEXT, 
-        cpfage TEXT, 
-        telage TEXT, 
-        funage TEXT, 
-        datnas TEXT, 
-        datger TEXT, 
-        sitsin TEXT);   
-                
-                                            
-        CREATE TABLE IF NOT EXISTS clientes_producao_sync 
-        (codcli INTEGER PRIMARY KEY AUTOINCREMENT, 
-        nomcli TEXT, 
-        emacli TEXT, 
-        cpfcli TEXT, 
-        datnas TEXT, 
-        telcli TEXT, 
-        sitsin TEXT); 
+      DROP TABLE IF EXISTS respostas_formularios;
+      DROP TABLE IF EXISTS formularios;
+      DROP TABLE IF EXISTS perguntas_tipo_formulario;
+      DROP TABLE IF EXISTS tipo_formulario;
+      DROP TABLE IF EXISTS agentes_saude;
+      DROP TABLE IF EXISTS clientes;
+      DROP TABLE IF EXISTS situacao;
+      DROP TABLE IF EXISTS users;
 
-        CREATE TABLE IF NOT EXISTS situacao 
-        (codsit INTEGER PRIMARY KEY AUTOINCREMENT, 
-        dessit TEXT, 
-        datger TEXT); 
+      CREATE TABLE clientes (
+        codcli INTEGER PRIMARY KEY AUTOINCREMENT,
+        nomcli TEXT NOT NULL,
+        emacli TEXT NOT NULL,
+        cpfcli TEXT NOT NULL UNIQUE,
+        telcli TEXT,
+        datnas DATETIME NOT NULL,
+        datger DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
 
-        CREATE TABLE IF NOT EXISTS users 
-        (codusu INTEGER PRIMARY KEY AUTOINCREMENT, 
-        nomusu TEXT, 
-        emausu TEXT UNIQUE,
-        logusu TEXT UNIQUE,
-        password TEXT,
-        situsu TEXT DEFAULT 'A'); 
+      CREATE TABLE agentes_saude (
+        codage INTEGER PRIMARY KEY AUTOINCREMENT,
+        nomage TEXT NOT NULL,
+        emaage TEXT NOT NULL,
+        cpfage TEXT NOT NULL UNIQUE,
+        telage TEXT,
+        funage TEXT NOT NULL,
+        datnas DATETIME NOT NULL,
+        datger DATETIME
+      );
 
-        
-        CREATE TABLE IF NOT EXISTS forms_producao_nsync (
-          codfor INTEGER PRIMARY KEY AUTOINCREMENT,  
-          codage INTEGER,
-          codcli INTEGER,
-          ns_codcli INTEGER,
-          descri TEXT,
-          remrec TEXT,
-          codsit INTEGER,
-          usuger INTEGER,
-          datger TEXT DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (codage) REFERENCES agentes_saude (codage),
-          FOREIGN KEY (codcli) REFERENCES clientes_producao_sync (codcli),
-          FOREIGN KEY (ns_codcli) REFERENCES clientes_producao_nsync (codcli),
-          FOREIGN KEY (codsit) REFERENCES situacao (codsit),
-          FOREIGN KEY (usuger) REFERENCES users (codusu)
-        );
+      CREATE TABLE tipo_formulario (
+        tipfor INTEGER PRIMARY KEY AUTOINCREMENT,
+        nomtip TEXT NOT NULL,
+        destip TEXT,
+        datger DATETIME
+      );
 
-        CREATE TABLE IF NOT EXISTS forms_producao_sync (
-          codfor TEXT PRIMARY KEY,  
-          codage INTEGER,
-          codcli INTEGER,
-          ns_codcli INTEGER,
-          descri TEXT,
-          remrec TEXT,
-          codsit INTEGER,
-          usuger INTEGER,
-          sitsin TEXT,
-          datger TEXT DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (codage) REFERENCES agentes_saude (codage),
-          FOREIGN KEY (codcli) REFERENCES clientes_producao_sync (codcli),
-          FOREIGN KEY (ns_codcli) REFERENCES clientes_producao_nsync (codcli),
-          FOREIGN KEY (codsit) REFERENCES situacao (codsit),
-          FOREIGN KEY (usuger) REFERENCES users (codusu)
-        );         
+      CREATE TABLE perguntas_tipo_formulario (
+        idperg INTEGER PRIMARY KEY AUTOINCREMENT,
+        desprg TEXT NOT NULL,
+        tipper TEXT NOT NULL,
+        tipfor INTEGER NOT NULL,
+        FOREIGN KEY (tipfor) REFERENCES tipo_formulario (tipfor)
+      );
+
+      CREATE TABLE situacao (
+        codsit INTEGER PRIMARY KEY AUTOINCREMENT,
+        dessit TEXT NOT NULL,
+        datger DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE users (
+        codusu INTEGER PRIMARY KEY AUTOINCREMENT,
+        nomusu TEXT NOT NULL,
+        emausu TEXT NOT NULL UNIQUE,
+        logusu TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        situsu TEXT DEFAULT 'A'
+      );
+
+      CREATE TABLE formularios (
+        codfor TEXT PRIMARY KEY, -- uuid
+        tipfor INTEGER NOT NULL,
+        codage INTEGER NOT NULL,
+        codcli INTEGER NOT NULL,
+        descri TEXT NOT NULL,
+        remrec TEXT,
+        codsit INTEGER NOT NULL,
+        usuger INTEGER NOT NULL,
+        datger DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (tipfor) REFERENCES tipo_formulario (tipfor),
+        FOREIGN KEY (codage) REFERENCES agentes_saude (codage),
+        FOREIGN KEY (codcli) REFERENCES clientes (codcli),
+        FOREIGN KEY (codsit) REFERENCES situacao (codsit),
+        FOREIGN KEY (usuger) REFERENCES users (codusu)
+      );
+
+      CREATE TABLE respostas_formularios (
+        codres INTEGER PRIMARY KEY AUTOINCREMENT,
+        codfor TEXT NOT NULL,
+        idperg INTEGER NOT NULL,
+        valres TEXT NOT NULL,
+        datger DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (codfor) REFERENCES formularios (codfor),
+        FOREIGN KEY (idperg) REFERENCES perguntas_tipo_formulario (idperg)
+      );
+     
         `);
-        console.log('aqui')
         return createMigrations;
     } catch (error) {
-      console.log('aqui')
         return error;
     }
 }

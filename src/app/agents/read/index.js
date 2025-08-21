@@ -88,11 +88,6 @@ export default function App() {
       <TouchableOpacity style={style.buttonLink} onPress={sync_api}>
         <Text style={style.buttonLink}>Sincronizar</Text>
       </TouchableOpacity>
-      {/* <Button style = {style.buttonLink} onPress={sync_api} title='Sincronizar Clientes'/> */}
-      {/* <Link style={style.buttonLink} href="/clients/read">
-        Consultar Clientes
-      </Link> */}
-    
     </View>
   );
 }

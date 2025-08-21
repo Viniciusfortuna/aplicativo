@@ -114,24 +114,6 @@ export default function ClienteBase({
             mask={Masks.BRL_PHONE}
           />
         </View>
-{/*         
-        <Save
-          style={style.linkStyle}
-          acao={acao}
-          table={table}
-          data={data}
-          desc={desc}
-          msg={msg}
-        />
-
-        <Sync
-          style={style.linkStyle}
-          method={method}
-          dados={data}
-          table={table2}
-          msg={msgs}
-        /> */}
-
         <LinkCustom></LinkCustom>
       </SafeAreaView>
     </SafeAreaProvider>

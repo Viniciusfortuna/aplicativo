@@ -13,6 +13,7 @@ import SincronizaUsuarios from "../functions/services/users/sincronizaUsuarios";
 import SincronizaSituacao from "../functions/services/situations/sincronizaSituacao";
 import LoginContext, { useLogin } from "../contexts/loginContext";
 import SincronizaAgentes from "../functions/services/agents/sincronizaAgentes";
+import SincronizaTipoFormularios from "../functions/services/tipo_formularios/sincronizaTipoFormularios";
 
 export default function App() {
   const [logusu, setLogUsu] = useState("");
@@ -30,8 +31,8 @@ export default function App() {
     const responseCli = await SincronizaClientes();
     const responseAge = await SincronizaAgentes();
     const responseUse = await SincronizaUsuarios();
-    console.log(responseUse);
     const responseSit = await SincronizaSituacao();
+    const responseTipoFormularios = await SincronizaTipoFormularios();
 
     console.log("resposta usu:" + responseUse);
     console.log("resposta age:" + responseAge);
@@ -42,7 +43,8 @@ export default function App() {
       responseAge === "ok" &&
       responseCli === "ok" &&
       responseUse === "ok" &&
-      responseSit === "ok"
+      responseSit === "ok" &&
+      responseTipoFormularios == "ok"
     ) {
       Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
     }
@@ -58,13 +60,13 @@ export default function App() {
       </Modal>
 
       <Text style={style.label}> Olá, {logusu}</Text>
-      <Link style={style.buttonLink} href="/forms">
+      <Link style={style.buttonLink} href="/tipo_formularios/read/sync">
         Formulários
       </Link>
-      <Link style={style.buttonLink} href="agents">
+      <Link style={style.buttonLink} href="/agents/read/sync">
         Agentes
       </Link>
-      <Link style={style.buttonLink} href="clients/">
+      <Link style={style.buttonLink} href="/clients/read/sync">
         Clientes
       </Link>
     </View>

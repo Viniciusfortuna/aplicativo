@@ -45,7 +45,7 @@ export default function LoginBase() {
         setLogin(response.data);
         router.push("/home");
       } else {
-        Alert.alert("Erro", "Credenciais inválidas");
+        Alert.alert("Erro", "Credenciais inválidas ou usuário inativo");
         setLoading(false);
       }
     } catch (error) {

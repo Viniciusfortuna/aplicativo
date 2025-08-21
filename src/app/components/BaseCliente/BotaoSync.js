@@ -13,13 +13,6 @@ export default function Sync({ method, table, dados, msg }) {
 
   // console.log(dados)
   const SyncData = async () => {
-    // delete dados.codcli;
-    // const data = await sync_clients(method, dados);
-
-    // console.log(data)
-    // console.log(data.data.cliente)
-    // console.log(data.status)
-    console.log(dados.datnas);
     if (dados.datnas) {
       try {
         // Verifica se já está no formato ISO
@@ -47,12 +40,9 @@ export default function Sync({ method, table, dados, msg }) {
 
     if (method === "POST") {
       delete dados.codcli;
-      console.log("aqui no post");
       methodDb = "INSERT";
     } else if (method === "PUT") {
       methodDb = "UPDATE";
-      console.log("aqui no put");
-      console.log(dados.datnas);
     } else if (method === "DELETE") {
       methodDb = "DELETE";
     } else if (method === "GET") {
@@ -60,20 +50,11 @@ export default function Sync({ method, table, dados, msg }) {
     }
 
     var data;
-    // console.log(dados + "aquinovo")
     try {
       data = await sync_clients(method, dados);
-      console.log(data);
-      console.log("deu");
     } catch (error) {
       console.log(error);
     }
-
-    console.log(data.status);
-
-    // console.log(data)
-    // console.log(data.data.cliente)
-    // console.log(data.status)
 
     if (data.status == 200) {
       try {
