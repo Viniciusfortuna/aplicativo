@@ -14,6 +14,7 @@ import SincronizaSituacao from "../functions/services/situations/sincronizaSitua
 import LoginContext, { useLogin } from "../contexts/loginContext";
 import SincronizaAgentes from "../functions/services/agents/sincronizaAgentes";
 import SincronizaTipoFormularios from "../functions/services/tipo_formularios/sincronizaTipoFormularios";
+import SincronizaPerguntasTipoFormulario from "../functions/services/perguntas_tipo_formularios/sincronizaPerguntasTipoFormularios";
 
 export default function App() {
   const [logusu, setLogUsu] = useState("");
@@ -33,18 +34,15 @@ export default function App() {
     const responseUse = await SincronizaUsuarios();
     const responseSit = await SincronizaSituacao();
     const responseTipoFormularios = await SincronizaTipoFormularios();
-
-    console.log("resposta usu:" + responseUse);
-    console.log("resposta age:" + responseAge);
-    console.log("resposta cli:" + responseCli);
-    console.log("resposta sit:" + responseSit);
+    const responsePeguntasTipoFormularios = await SincronizaPerguntasTipoFormulario();
 
     if (
       responseAge === "ok" &&
       responseCli === "ok" &&
       responseUse === "ok" &&
       responseSit === "ok" &&
-      responseTipoFormularios == "ok"
+      responseTipoFormularios == "ok" &&
+      responsePeguntasTipoFormularios == "ok"
     ) {
       Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
     }

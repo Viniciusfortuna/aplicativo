@@ -35,13 +35,12 @@ export default function TipoFormulariosListagem({ table, type }) {
               ) : null}
               {item.datger ? (
                 <Text style={style.itemDate}>
-                  Criado em:{" "}
-                  {new Date(item.datger).toLocaleDateString("pt-BR")}
+                  Criado em: {new Date(item.datger).toLocaleDateString("pt-BR")}
                 </Text>
               ) : null}
             </View>
             <Link
-              href={`/clients/update/${type}/id/${item.tipfor}`}
+              href={`/forms/create/`}
               style={style.editButton}
             >
               Novo

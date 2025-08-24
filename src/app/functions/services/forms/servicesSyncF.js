@@ -1,12 +1,6 @@
 export default async function sync_forms(method, data, action, id){
     if(method == "POST"){
-        try {
-            
-            console.log(data)
-            if(!data.ns_codcli){
-                delete data.ns_codcli;
-            }
-            
+        try {         
             const result = await fetch('https://api-agents-health.onrender.com/forms/', {
                 method:'POST',
                 body:JSON.stringify(data),
@@ -14,8 +8,7 @@ export default async function sync_forms(method, data, action, id){
                     'Content-Type': 'application/json',
                 }
             });
-            // console.log(result)
-            // console.log(result.json())
+            
             return {
                 status: result.status,
                 data: await result.json(),
