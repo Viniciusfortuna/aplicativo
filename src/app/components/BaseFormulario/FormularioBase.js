@@ -105,6 +105,7 @@ export default function FormularioBase({
 
     // Se não for INSERT, carrega dados do form
     if (acao !== "INSERT") {
+      console.log("estou no up")
       const result = await servicesForms("SELECT", table, "ID", id);
       setCodAge(result[0]?.codage || "");
       setCodCli(result[0]?.codcli || "");
@@ -235,7 +236,7 @@ export default function FormularioBase({
         table={table}
         data={{
           ...data,
-          respostas: Object.entries(respostas).map(([idperg, valres]) => ({
+          resfor: Object.entries(respostas).map(([idperg, valres]) => ({
             idperg,
             valres,
           })),

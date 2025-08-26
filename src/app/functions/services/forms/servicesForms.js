@@ -1,54 +1,31 @@
 import { useRouter } from 'expo-router';
+import 'react-native-get-random-values'
 import * as SQLite from  'expo-sqlite'
+import { tables } from '../db/tables';
+import {v4 as uuidv4} from "uuid";
 
 export default async function servicesForms(action, table, method, data, router, sync, dataDel){
 
     const db = await SQLite.openDatabaseAsync('producao');
 
     var result;
+    console.log(data)
 
     if(action == 'SELECT'){
-            if(table == 'forms_producao_nsync'){
+            if(table == tables.formularios){
                 if(method == 'ID'){
                     console.log(db)
                     try {
-                        result = await db.getAllAsync('SELECT *   \
-                            FROM forms_producao_nsync WHERE codfor = ?', [data]);
-                    } catch (error) {
-                        console.log(error)
-                    }
-                    console.log(result);   
-                    
-                }                
-                else if(method == 'ALL'){
-                    console.log('auqiqi')
-                    console.log(db)
-                    try {
-                        result = await db.getAllAsync('SELECT *   \
-                            FROM forms_producao_nsync');
-                    } catch (error) {
-                        console.log(error)
-                    }
-                    console.log(result); 
-                }
-            }
-            if(table == 'forms_producao_sync'){
-                if(method == 'ID'){
-                    console.log(db)
-                    try {
-                        result = await db.getAllAsync('SELECT *   \
-                            FROM forms_producao_sync WHERE codfor = ?', [data]);
-                        
-                        // if(result.length == 0) result = null;
+                        result = await db.getAllAsync(`SELECT *   \
+                            FROM ${tables.formularios} WHERE codfor = ?`, [data]);
                     } catch (error) {
                         console.log(error)
                     }
                 }                
                 else if(method === 'ALL'){
                     try {
-                        result = await db.getAllAsync('SELECT *   \
-                            FROM forms_producao_sync');
-
+                        result = await db.getAllAsync(`SELECT *   \
+                            FROM ${tables.formularios}`);
                         console.log(result)
                     } catch (error) {
                         console.log(error)
@@ -60,27 +37,26 @@ export default async function servicesForms(action, table, method, data, router,
 
 
       if(action == 'INSERT'){
-            if(table == 'forms_producao_nsync'){
+            const idForm = uuidv4(); 
+            if(table == tables.formularios){
                 try {
-                    const result = await db.runAsync('INSERT INTO forms_producao_nsync (codfor, codage, codcli, ns_codcli, descri, remrec, codsit, usuger) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [data.codfor, data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.usuger]);
+                    const result = await db.runAsync(`INSERT INTO ${tables.formularios} (codfor, tipfor, codage, codcli, descri, remrec, codsit, usuger, sitsin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`, 
+                                                        [idForm, data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.usuger]); 
+                    /*insere respostas*/
+                    await db.withTransactionAsync(async tx => {
+                    // percorre todas as respostas e insere
+                        for (const resposta of data.resfor) {
+                            console.log("a resposta")
+                            console.log(resposta)
+                            await tx(
+                            `INSERT INTO ${tables.respostas_formularios} (codfor, idperg, valres) VALUES (?, ?, ?)`,
+                            [idForm, resposta.idperg, resposta.valres]
+                            );
+                        }
+                    });
                     console.log(result.lastInsertRowId, result.changes);
-                    router.push('/forms/read/not_sync');
-                } catch (error) {
-                    console.log('erro ao inserir ' +  error);
-                }
-                console.log(result); 
-            }
-            if(table == 'forms_producao_sync'){
-                try {
-                    // await db.execAsync('CREATE TABLE IF NOT EXISTS forms_producao_sync (codfor INTEGER PRIMARY KEY AUTOINCREMENT, nomcli TEXT, emacli TEXT, cpfcli TEXT, datnas TEXT, telcli TEXT, sitsin TEXT)');
-                    // Vai deletar ta tabela de pendentes para sincronização
-                    console.log('dado aqui de inserção')
-                    console.log(data)
-                    console.log('dado aqui de inserção')
-                    const resultDel = await db.runAsync('DELETE FROM forms_producao_nsync WHERE codfor = ?', [dataDel]);
-                    const result = await db.runAsync('INSERT INTO forms_producao_sync (codfor, codage, codcli, ns_codcli, descri, remrec, codsit, usuger) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [data.codfor, data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.usuger]);
+
                     router.push('/forms/read/sync');
-                    console.log(result.lastInsertRowId, result.changes);
                 } catch (error) {
                     console.log('erro ao inserir ' +  error);
                 }
@@ -89,26 +65,19 @@ export default async function servicesForms(action, table, method, data, router,
         }
 
         if(action == 'UPDATE'){
-            if(table == 'forms_producao_nsync'){
-                try {
-                    console.log(data)
-                    const result = await db.runAsync('UPDATE forms_producao_nsync set codage = ?, codcli = ?, ns_codcli = ?, descri = ?, remrec = ?, codsit = ? where codfor = ?', [data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.codfor]);
-                    console.log(result.changes);
-                } catch (error) {
-                    console.log('erro ao atualizar noaoaoao ' +  error);
-                }
-                console.log(result); 
-            }
-            else if(table == 'forms_producao_sync'){
+            if(table == tables.formularios){
                 try {
                     //Se foi chamada atraves da sincronização
                     if(sync == 1){
-                        const result = await db.runAsync('UPDATE forms_producao_sync set sitsin = 2 where codfor = ?', [data]);
+                        const result = await db.runAsync(`UPDATE ${tables.formularios} set sitsin = 2 where codfor = ?`, [data]);
                     }
                     else {
-                        const result = await db.runAsync('UPDATE forms_producao_sync set codage = ?, codcli = ?, ns_codcli = ?, descri = ?, remrec = ?, codsit ?, sitsin = 1 where codfor = ?', [data.codage, data.codcli, data.ns_codcli, data.descri, data.remrec, data.codsit, data.codfor]);
-                    }
-                    
+                        const result = await db.runAsync(`UPDATE ${tables.formularios} set tipfor = ?, codage = ?, codcli = ?, descri = ?, remrec = ?, codsit = ?, sitsin = 1 where codfor = ?`,
+                                                         [data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.codfor]);
+
+                        await db.runAsync(`UPDATE ${tables.respostas_formularios} set codfor = ?, idperg = ?, valres = ? where codfor = ?`,
+                                                         [data.codfor, data.resfor.idperg, data.resfor.valres, data.codfor]);
+                    }          
                 } catch (error) {
                     console.log('erro ao atualizar ' +  error);
                 }
@@ -117,19 +86,9 @@ export default async function servicesForms(action, table, method, data, router,
         }
 
         if(action == 'DELETE'){
-            if(table == 'forms_producao_nsync'){
+            if(table == tables.formularios){
                 try {
-                    const result = await db.runAsync('DELETE FROM forms_producao_nsync where codfor = ?', [data]);
-                    console.log(result.changes);
-                } catch (error) {
-                    console.log('erro ao deletar dado ' +  error);
-                }
-                console.log(result); 
-            }
-            else if(table == 'forms_producao_sync'){
-                try {
-                    console.log(data)
-                    const result = await db.runAsync('DELETE FROM forms_producao_sync where codfor = ?', [data]);
+                    const result = await db.runAsync(`DELETE FROM ${tables.formularios} where codfor = ?`, [data]);
                 } catch (error) {
                     console.log('erro ao deletar dado ' +  error);
                 }

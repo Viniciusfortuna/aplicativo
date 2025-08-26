@@ -16,8 +16,9 @@ export default function Sync({ method, table, dados, msg, dataDel }) {
   // console.log(dados)
   const SyncData = async () => {
     if (method === "POST") {
-      delete dados.codfor;
+      // delete dados.codfor;
       console.log("aqui no post");
+      console.log(dados)
       methodDb = "INSERT";
     } else if (method === "PUT") {
       methodDb = "UPDATE";

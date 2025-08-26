@@ -73,6 +73,7 @@ export default async function migrations(){
         remrec TEXT,
         codsit INTEGER NOT NULL,
         usuger INTEGER NOT NULL,
+        sitsin INTEGER,
         datger DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (tipfor) REFERENCES tipo_formulario (tipfor),
         FOREIGN KEY (codage) REFERENCES agentes_saude (codage),
