@@ -49,8 +49,17 @@ export default function FormularioBase({
     remrec,
     codsit,
     usuger: login.codusu,
+    resfor: Object.entries(respostas).map(([idperg, valres]) => ({
+    idperg,
+    valres
+    }))
   };
 
+  if (acao != "INSERT") {
+    useEffect(() => {
+      fetchData();
+    }, []);
+  }
 
   // Carregar opções
   useEffect(() => {
@@ -105,7 +114,6 @@ export default function FormularioBase({
 
     // Se não for INSERT, carrega dados do form
     if (acao !== "INSERT") {
-      console.log("estou no up")
       const result = await servicesForms("SELECT", table, "ID", id);
       setCodAge(result[0]?.codage || "");
       setCodCli(result[0]?.codcli || "");
@@ -234,13 +242,7 @@ export default function FormularioBase({
       <Save
         acao={acao}
         table={table}
-        data={{
-          ...data,
-          resfor: Object.entries(respostas).map(([idperg, valres]) => ({
-            idperg,
-            valres,
-          })),
-        }}
+        data={data}
         desc={desc}
         msg={msg}
       />

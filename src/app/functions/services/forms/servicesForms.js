@@ -39,23 +39,21 @@ export default async function servicesForms(action, table, method, data, router,
       if(action == 'INSERT'){
             const idForm = uuidv4(); 
             if(table == tables.formularios){
-                try {
-                    const result = await db.runAsync(`INSERT INTO ${tables.formularios} (codfor, tipfor, codage, codcli, descri, remrec, codsit, usuger, sitsin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`, 
-                                                        [idForm, data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.usuger]); 
+                try { 
                     /*insere respostas*/
-                    await db.withTransactionAsync(async tx => {
+                    db.withTransactionAsync(async () => {
+                        const result = await db.runAsync(`INSERT INTO ${tables.formularios} (codfor, tipfor, codage, codcli, descri, remrec, codsit, usuger, sitsin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`, 
+                                                        [idForm, data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.usuger]);
                     // percorre todas as respostas e insere
                         for (const resposta of data.resfor) {
                             console.log("a resposta")
                             console.log(resposta)
-                            await tx(
+                            await db.runAsync(
                             `INSERT INTO ${tables.respostas_formularios} (codfor, idperg, valres) VALUES (?, ?, ?)`,
                             [idForm, resposta.idperg, resposta.valres]
                             );
                         }
                     });
-                    console.log(result.lastInsertRowId, result.changes);
-
                     router.push('/forms/read/sync');
                 } catch (error) {
                     console.log('erro ao inserir ' +  error);
