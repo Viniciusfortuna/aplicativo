@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, Text, TextInput, ScrollView, StyleSheet } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import { useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import Save from "./BotaoSave";
 import Sync from "./BotaoSync";
 import LoginContext from "../../contexts/loginContext";
@@ -15,16 +15,7 @@ import servicesTipoFormulario from "../../functions/services/tipo_formularios/se
 import servicesPerguntasTipoFormulario from "../../functions/services/perguntas_tipo_formularios/servicePerguntasTipoFormularios";
 import { tables } from "../../functions/services/db/tables";
 
-export default function FormularioBase({
-  acao,
-  table,
-  desc,
-  msg,
-  method,
-  msgs,
-  table2,
-}) {
-  // Estados gerais
+export default function FormularioBase({ acao, table, desc, msg, method, msgs, table2 }) {
   const [tipfor, setTipfor] = useState("");
   const [dataTipo, setDataTipo] = useState([]);
   const [perguntas, setPerguntas] = useState([]);
@@ -50,88 +41,86 @@ export default function FormularioBase({
     codsit,
     usuger: login.codusu,
     resfor: Object.entries(respostas).map(([idperg, valres]) => ({
-    idperg,
-    valres
-    }))
+      idperg,
+      valres,
+    })),
+    codfor: id
   };
 
-  if (acao != "INSERT") {
-    useEffect(() => {
-      fetchData();
-    }, []);
-  }
-
-  // Carregar opções
+  // 1️⃣ Carrega opções gerais (clientes, agentes, situações)
   useEffect(() => {
+    const fetchOpcoes = async () => {
+      try {
+        const resultClientes = await services("SELECT", tables.clientes, "ALL");
+        const resultAgents = await servicesAgents("SELECT", tables.agentes, "ALL", "");
+        const resultSituations = await serviceSituation("SELECT", tables.situacao, "ALL", "");
+        setClientes(resultClientes);
+        setAgentes(resultAgents);
+        setSituacao(resultSituations);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     fetchOpcoes();
   }, []);
 
-  // Carregar perguntas quando muda tipo de formulário
+  // 2️⃣ Carrega dados do formulário se for UPDATE
+  useEffect(() => {
+    if (acao !== "INSERT" && id) {
+      const loadData = async () => {
+        // Tipos de formulário
+        const resultTipos = await servicesTipoFormulario("SELECT", tables.tipo_formulario, "ALL", "");
+        setDataTipo(resultTipos);
+
+        // Dados do formulário
+        console.log('fazendo a busca pelo id' + id)
+        const resultForm = await servicesForms("SELECT", table, "ID", id);
+        if (resultForm) {
+          setCodAge(resultForm?.codage || "");
+          setCodCli(resultForm?.codcli || "");
+          setDesCri(resultForm?.descri || "");
+          setRemRec(resultForm?.remrec || "");
+          setCodSit(resultForm?.codsit || "");
+          setTipfor(resultForm?.tipfor || "");
+          console.log('resultado fo ro' + resultForm.tipfor)
+
+          // Respostas salvas
+          if (resultForm?.resfor) {
+            const respostasSalvas = {};
+            resultForm.resfor.forEach((r) => {
+              respostasSalvas[r.idperg] = r.valres;
+            });
+            setRespostas(respostasSalvas);
+          }
+        }
+      };
+      loadData();
+    } else if (acao === "INSERT") {
+      // Para INSERT, carregar tipos e escolher o primeiro por padrão
+      const loadTipos = async () => {
+        const resultTipos = await servicesTipoFormulario("SELECT", tables.tipo_formulario, "ALL", "");
+        setDataTipo(resultTipos);
+        setTipfor(resultTipos[0]?.tipfor || "");
+      };
+      loadTipos();
+    }
+  }, [acao, id]);
+
+  // 3️⃣ Carrega perguntas quando tipfor mudar
   useEffect(() => {
     if (tipfor) {
-      fetchPerguntas();
+      const loadPerguntas = async () => {
+        const result = await servicesPerguntasTipoFormulario(
+          "SELECT",
+          tables.perguntas_tipo_formulario,
+          "ID",
+          tipfor
+        );
+        setPerguntas(result);
+      };
+      loadPerguntas();
     }
   }, [tipfor]);
-
-  const fetchOpcoes = async () => {
-    try {
-      const resultClientes = await services(
-        "SELECT",
-        tables.clientes,
-        "ALL"
-      );
-      const resultAgents = await servicesAgents(
-        "SELECT",
-        tables.agentes,
-        "ALL",
-        ""
-      );
-      const resultSituations = await serviceSituation(
-        "SELECT",
-        tables.situacao,
-        "ALL",
-        ""
-      );
-      setClientes(resultClientes);
-      setAgentes(resultAgents);
-      setSituacao(resultSituations);
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const fetchData = async () => {
-    // Carrega tipos
-    const resultTipos = await servicesTipoFormulario(
-      "SELECT",
-      table2,
-      "ALL",
-      ""
-    );
-    setTipfor(resultTipos[0]?.tipfor || "");
-    setDataTipo(resultTipos);
-
-    // Se não for INSERT, carrega dados do form
-    if (acao !== "INSERT") {
-      const result = await servicesForms("SELECT", table, "ID", id);
-      setCodAge(result[0]?.codage || "");
-      setCodCli(result[0]?.codcli || "");
-      setDesCri(result[0]?.descri || "");
-      setRemRec(result[0]?.remrec || "");
-      setCodSit(result[0]?.codsit || "");
-    }
-  };
-
-  const fetchPerguntas = async () => {
-    const result = await servicesPerguntasTipoFormulario(
-      "SELECT",
-      tables.perguntas_tipo_formulario,
-      "ID",
-      tipfor
-    );
-    setPerguntas(result);
-  };
 
   const handleResposta = (idperg, valor) => {
     setRespostas({ ...respostas, [idperg]: valor });
@@ -156,6 +145,7 @@ export default function FormularioBase({
           searchPlaceholder="Pesquisar..."
           value={tipfor}
           onChange={(item) => setTipfor(item.tipfor)}
+          disabled={acao !== "INSERT"} // não permite alterar no UPDATE
         />
       </View>
 
@@ -239,20 +229,17 @@ export default function FormularioBase({
       ))}
 
       {/* Botões */}
-      <Save
-        acao={acao}
-        table={table}
-        data={data}
-        desc={desc}
-        msg={msg}
-      />
-      <Sync
-        method={method}
-        dados={data}
-        table={table2}
-        msg={msgs}
-        dataDel={id}
-      />
+      <Save acao={acao} table={table} data={data} desc={desc} msg={msg} />
+      {acao !== "INSERT" && (
+        <Sync
+          method={method}
+          dados={data}
+          table={table2}
+          msg={msgs}
+          dataDel={id}
+        />
+      )}
+      <Link href={'/forms/read/sync'}> Listar</Link>
     </ScrollView>
   );
 }

@@ -15,6 +15,7 @@ import LoginContext, { useLogin } from "../contexts/loginContext";
 import SincronizaAgentes from "../functions/services/agents/sincronizaAgentes";
 import SincronizaTipoFormularios from "../functions/services/tipo_formularios/sincronizaTipoFormularios";
 import SincronizaPerguntasTipoFormulario from "../functions/services/perguntas_tipo_formularios/sincronizaPerguntasTipoFormularios";
+import SincronizaForms from "../functions/services/forms/sincronizaFormularios";
 
 export default function App() {
   const [logusu, setLogUsu] = useState("");
@@ -35,6 +36,7 @@ export default function App() {
     const responseSit = await SincronizaSituacao();
     const responseTipoFormularios = await SincronizaTipoFormularios();
     const responsePeguntasTipoFormularios = await SincronizaPerguntasTipoFormulario();
+    const responseFormularios = await SincronizaForms();
 
     if (
       responseAge === "ok" &&
@@ -42,7 +44,8 @@ export default function App() {
       responseUse === "ok" &&
       responseSit === "ok" &&
       responseTipoFormularios == "ok" &&
-      responsePeguntasTipoFormularios == "ok"
+      responsePeguntasTipoFormularios == "ok" &&
+      responseFormularios == "ok"
     ) {
       Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
     }
@@ -66,6 +69,9 @@ export default function App() {
       </Link>
       <Link style={style.buttonLink} href="/clients/read/sync">
         Clientes
+      </Link>
+      <Link style={style.buttonLink} href="/forms/read/sync">
+        Listar Formularios
       </Link>
     </View>
   );

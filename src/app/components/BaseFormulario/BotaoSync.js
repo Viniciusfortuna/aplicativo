@@ -1,82 +1,75 @@
 import { Pressable, Text, StyleSheet, Alert } from "react-native";
-// import * as SQLLite from 'expo-sqlite'
-import * as SQLLite from "expo-sqlite";
-import sync_clients from "../../functions/services/clients/serviceSync";
 import { useRouter } from "expo-router";
-import services from "../../functions/services/clients/servicesClient";
-import { parse, isValid } from "date-fns";
 import sync_forms from "../../functions/services/forms/servicesSyncF";
 import servicesForms from "../../functions/services/forms/servicesForms";
 
 export default function Sync({ method, table, dados, msg, dataDel }) {
   const router = useRouter();
-  // var dadosAnt = dados;
-  var methodDb;
 
-  // console.log(dados)
   const SyncData = async () => {
+    let methodDb;
     if (method === "POST") {
-      // delete dados.codfor;
-      console.log("aqui no post");
-      console.log(dados)
       methodDb = "INSERT";
     } else if (method === "PUT") {
       methodDb = "UPDATE";
-      console.log("aqui no put");
-      console.log(dados.datnas);
     } else if (method === "DELETE") {
       methodDb = "DELETE";
     } else if (method === "GET") {
       methodDb = "SELECT";
     }
 
-    var data;
-    // console.log(dados + "aquinovo")
     try {
-      data = await sync_forms(method, dados);
-      console.log(data);
-      console.log("deu");
-    } catch (error) {
-      console.log(error);
-    }
+      let data;
 
-    console.log(data.status);
-
-    if (data.status == 200) {
-      try {
-        if (method === "POST") {
-          const result = await servicesForms(
-            "INSERT",
-            table,
-            "",
-            data.data.forms,
-            router,
-            "",
-            dataDel
-          );
-        } else if (method === "PUT") {
-          const result = await servicesForms(
-            "UPDATE",
-            table,
-            "",
-            data.codfor,
-            router,
-            1
-          );
+      // 🔹 Se for UPDATE, verifica antes se o registro existe no servidor
+      if (method === "PUT") {
+        const result = await sync_forms("GET", "", "ID", dados.codfor);
+        console.log(result)
+        console.log(dados.codfor)
+        if (result.codfor == null) {
+          // não existe → cria
+          const created = await sync_forms("POST", dados);
+          console.log(created)
+          console.log('dado resposta')
+          if (created.status !== 200) {
+            Alert.alert("Erro ao sincronizar!");
+            return;
+          }
+          data = created;
+        } else {
+          // existe → atualiza
+          console.log('estou no atualiza')
+          data = await sync_forms("PUT", dados);
         }
-        Alert.alert("Sucesso", msg + " efetuada com sucesso");
-      } catch (error) {
-        console.log(error);
+      } else {
+        // POST, DELETE, GET normais
+        data = await sync_forms(method, dados);
       }
-    } else {
-      console.log(dados);
-      console.log(data);
+
+      console.log("Resposta servidor:", data);
+
+      if (data.status === 200) {
+        // 🔹 Atualiza também no SQLite/local
+        if (method === "POST") {
+          await servicesForms("INSERT", table, "", data.data.forms, router, "", dataDel);
+        } else if (method === "PUT") {
+          await servicesForms("UPDATE", table, "", dados.codfor, router, 1);
+        }
+
+        Alert.alert("Sucesso", msg + " efetuada com sucesso");
+      } else {
+        Alert.alert("Erro", "Falha na sincronização");
+        console.log("Erro sync:", data);
+      }
+    } catch (error) {
+      console.log("Erro SyncData:", error);
+      Alert.alert("Erro", "Falha na comunicação com o servidor");
     }
   };
 
   return (
     <Pressable style={style.linkStyle} onPress={SyncData}>
-      <Text style={style.linkStyle}>Sincronizar</Text>
+      <Text style={style.textStyle}>Sincronizar</Text>
     </Pressable>
   );
 }
@@ -89,15 +82,15 @@ const style = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    textAlign: "center",
-    textAlignVertical: "center",
-    color: "#000",
-    fontSize: 14,
-    fontWeight: "bold",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  textStyle: {
+    color: "#000",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });

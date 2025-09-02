@@ -1,48 +1,48 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, Button } from "react-native";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, FlatList } from "react-native";
 import { Link } from "expo-router";
-import services from "../../functions/services/clients/servicesClient";
 import servicesForms from "../../functions/services/forms/servicesForms";
 
 export default function FormulariosListagem({ table, type }) {
   const [forms, setForms] = useState([]);
 
   const getData = async () => {
-    const data = await servicesForms("SELECT", table, "ALL", "");
+    const data = await servicesForms("SELECT", table, "ALL", "", "", "", 0);
     setForms(data);
   };
 
   useEffect(() => {
     getData();
-    console.log(forms);
   }, []);
 
   return (
     <View style={style.container}>
       <View style={style.headerContainer}>
-        <Text style={style.headerText}>Formularios</Text>
+        <Text style={style.headerText}>Formulários</Text>
       </View>
 
       <FlatList
-        contentContainerStyle={style.flatlist}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1, gap: 10 }}
         data={forms}
         keyExtractor={(item) => item.codfor.toString()}
         renderItem={({ item }) => (
           <View style={style.itemContainer}>
             <Text style={style.itemText}>{item.codfor}</Text>
             <Link
-              href={"/forms/update/" + type + "/id/" + item.codfor}
+              href={`/forms/update/${type}/id/${item.codfor}`}
               style={style.editButton}
             >
               Editar
             </Link>
           </View>
         )}
+        ListFooterComponent={
+          <Link style={style.linkStyle} href={"/"}>
+            Voltar
+          </Link>
+        }
       />
-      <Link style={style.linkStyle} href={"/"}>
-        Voltar
-      </Link>
     </View>
   );
 }
@@ -57,7 +57,7 @@ const style = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#E0E0E0", // Cor de fundo do cabeçalho
+    backgroundColor: "#E0E0E0",
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
@@ -70,11 +70,6 @@ const style = StyleSheet.create({
     flex: 1,
     textAlign: "center",
   },
-  flatlist: {
-    flex: 1,
-    width: "100%",
-    gap: 10,
-  },
   itemContainer: {
     backgroundColor: "#fff",
     padding: 15,
@@ -85,7 +80,7 @@ const style = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 5, // Para dispositivos Android
+    elevation: 5,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -117,6 +112,7 @@ const style = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    gap: 20,
+    marginTop: 20,
+    alignSelf: "center",
   },
 });

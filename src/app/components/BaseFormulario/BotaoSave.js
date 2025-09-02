@@ -10,8 +10,16 @@ export default function Save({ acao, table, method, data, desc, msg }) {
 
   const SaveData = async () => {
     try {
+      console.log('atua')
+      console.log(data)
       const result = await servicesForms(acao, table, method, data, router, 0);
       Alert.alert("Sucesso", msg + " efetuada com sucesso");
+      if(acao == "INSERT"){
+         console.log('id form')
+         console.log(result)
+        //  router.push(`/forms/update/sync/`);
+         router.push(`/forms/update/sync/id/${result}`);
+      }
     } catch (error) {
       console.log(error);
     }

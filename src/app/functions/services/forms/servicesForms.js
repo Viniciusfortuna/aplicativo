@@ -9,35 +9,101 @@ export default async function servicesForms(action, table, method, data, router,
     const db = await SQLite.openDatabaseAsync('producao');
 
     var result;
-    console.log(data)
 
-    if(action == 'SELECT'){
-            if(table == tables.formularios){
-                if(method == 'ID'){
-                    console.log(db)
+    // if(action == 'SELECT'){
+    //         if(table == tables.formularios){
+    //             if(method == 'ID'){
+    //                 console.log(db)
+    //                 try {
+    //                     result = await db.getAllAsync(`SELECT *   \
+    //                         FROM ${tables.formularios} WHERE codfor = ?`, [data]);
+    //                 } catch (error) {
+    //                     console.log(error)
+    //                 }
+    //             }                
+    //             else if(method === 'ALL'){
+    //                 try {
+    //                     result = await db.getAllAsync(`SELECT *   \
+    //                         FROM ${tables.formularios}`);
+    //                     console.log(result)
+    //                 } catch (error) {
+    //                     console.log(error)
+    //                 }
+    //                 console.log(result); 
+    //             }
+    //         }
+    //   }
+        if (action === 'SELECT') {
+            if (table === tables.formularios) {
+
+                if (method === 'ID') {
                     try {
-                        result = await db.getAllAsync(`SELECT *   \
-                            FROM ${tables.formularios} WHERE codfor = ?`, [data]);
-                    } catch (error) {
-                        console.log(error)
-                    }
-                }                
-                else if(method === 'ALL'){
-                    try {
-                        result = await db.getAllAsync(`SELECT *   \
-                            FROM ${tables.formularios}`);
+                        // Se seu expo-sqlite tiver getFirstAsync, use-o. Caso não, use getAllAsync e pegue [0].
+                        const form =
+                        (await db.getFirstAsync(`SELECT * FROM ${tables.formularios} WHERE codfor = ?`, [data])) ||
+                        null;
+
+                        if (!form) {
+                        result = null; // não achou
+                        } else {
+                        const respostas = await db.getAllAsync(
+                            `SELECT * FROM ${tables.respostas_formularios} WHERE codfor = ?`,
+                            [data]
+                        );
+                        result = { ...form, resfor: respostas };
+                        }
+                        console.log('esse é o form')
                         console.log(result)
                     } catch (error) {
-                        console.log(error)
+                        console.log(error);
                     }
-                    console.log(result); 
                 }
-            }
-      }
 
+                else if (method === 'ALL') {
+                    try {
+                        var query = `SELECT * FROM ${tables.formularios}`; 
+                        var query2 = `SELECT * FROM ${tables.respostas_formularios}`
+                        if(dataDel == 1){ //signfica que quer deletar
+                            query = query + ' WHERE SITSIN NOT IN (1)';
+                            query2 = query2 + ` ,${tables.formularios} WHERE ${tables.formularios}.codfor = ${tables.respostas_formularios}.codfor
+                                                AND ${tables.formularios}.sitsin NOT IN (1)`;
+                            console.log('query 1: ' + query);
+                            console.log('query 1: ' + query2);
+                        }
+                        const forms = await db.getAllAsync(query);
+                        if (!forms || forms.length === 0) {
+                        result = [];
+                        } else {
+                        const respostas = await db.getAllAsync(query2);
+
+                        // JS puro: agrupa respostas por codfor
+                        const respostasMap = {};
+                        for (const r of respostas) {
+                            if (!respostasMap[r.codfor]) respostasMap[r.codfor] = [];
+                            respostasMap[r.codfor].push(r);
+                        }
+
+                        result = forms.map(f => ({
+                            ...f,
+                            resfor: respostasMap[f.codfor] || []
+                        }));
+                        }
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+
+            }
+        }
 
       if(action == 'INSERT'){
-            const idForm = uuidv4(); 
+            var idForm;
+            if(!data.codfor){
+                idForm = uuidv4();
+            }
+            else {
+                idForm = data.codfor;
+            }
             if(table == tables.formularios){
                 try { 
                     /*insere respostas*/
@@ -54,7 +120,8 @@ export default async function servicesForms(action, table, method, data, router,
                             );
                         }
                     });
-                    router.push('/forms/read/sync');
+                    result = idForm;
+                    console.log(idForm + "esse é o di")
                 } catch (error) {
                     console.log('erro ao inserir ' +  error);
                 }
@@ -65,17 +132,43 @@ export default async function servicesForms(action, table, method, data, router,
         if(action == 'UPDATE'){
             if(table == tables.formularios){
                 try {
-                    //Se foi chamada atraves da sincronização
+                    // Se foi chamada através da sincronização
                     if(sync == 1){
-                        const result = await db.runAsync(`UPDATE ${tables.formularios} set sitsin = 2 where codfor = ?`, [data]);
-                    }
-                    else {
-                        const result = await db.runAsync(`UPDATE ${tables.formularios} set tipfor = ?, codage = ?, codcli = ?, descri = ?, remrec = ?, codsit = ?, sitsin = 1 where codfor = ?`,
-                                                         [data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.codfor]);
+                        const result = await db.runAsync(
+                            `UPDATE ${tables.formularios} 
+                            SET sitsin = 2 
+                            WHERE codfor = ?`, 
+                            [data]
+                        );
+                    } else {
+                        await db.withTransactionAsync(async () => {
+                            // Atualiza o formulário
+                            console.log('atualiza mesmo')
+                            console.log(data)
+                            await db.runAsync(
+                                `UPDATE ${tables.formularios} 
+                                SET tipfor = ?, codage = ?, codcli = ?, descri = ?, remrec = ?, codsit = ?, sitsin = 1 
+                                WHERE codfor = ?`,
+                                [data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.codfor]
+                            );
 
-                        await db.runAsync(`UPDATE ${tables.respostas_formularios} set codfor = ?, idperg = ?, valres = ? where codfor = ?`,
-                                                         [data.codfor, data.resfor.idperg, data.resfor.valres, data.codfor]);
-                    }          
+                            // Remove todas as respostas anteriores do formulário
+                            await db.runAsync(
+                                `DELETE FROM ${tables.respostas_formularios} 
+                                WHERE codfor = ?`,
+                                [data.codfor]
+                            );
+
+                            // Reinsere todas as respostas atualizadas
+                            for (const resposta of data.resfor) {
+                                await db.runAsync(
+                                    `INSERT INTO ${tables.respostas_formularios} (codfor, idperg, valres) 
+                                    VALUES (?, ?, ?)`,
+                                    [data.codfor, resposta.idperg, resposta.valres]
+                                );
+                            }
+                        });
+                    }
                 } catch (error) {
                     console.log('erro ao atualizar ' +  error);
                 }
@@ -86,12 +179,22 @@ export default async function servicesForms(action, table, method, data, router,
         if(action == 'DELETE'){
             if(table == tables.formularios){
                 try {
-                    const result = await db.runAsync(`DELETE FROM ${tables.formularios} where codfor = ?`, [data]);
+                    await db.withTransactionAsync(async () => {
+                            // Remove todas as respostas anteriores do formulário
+                            await db.runAsync(
+                                `DELETE FROM ${tables.respostas_formularios} 
+                                WHERE codfor = ?`,
+                                [data]
+                            );
+
+                            await db.runAsync(`DELETE FROM ${tables.formularios} where codfor = ?`, [data]);
+                    });
                 } catch (error) {
                     console.log('erro ao deletar dado ' +  error);
                 }
                 console.log(result); 
             }
-        }     
+        } 
+    console.log('id aqui' + result)   
     return result;
 }
