@@ -24,9 +24,8 @@ export default function Sync({ method, table, dados, msg, dataDel }) {
       // 🔹 Se for UPDATE, verifica antes se o registro existe no servidor
       if (method === "PUT") {
         const result = await sync_forms("GET", "", "ID", dados.codfor);
-        console.log(result)
-        console.log(dados.codfor)
-        if (result.codfor == null) {
+        
+        if (!result || result.codfor == null) {
           // não existe → cria
           const created = await sync_forms("POST", dados);
           console.log(created)
@@ -53,7 +52,7 @@ export default function Sync({ method, table, dados, msg, dataDel }) {
         if (method === "POST") {
           await servicesForms("INSERT", table, "", data.data.forms, router, "", dataDel);
         } else if (method === "PUT") {
-          await servicesForms("UPDATE", table, "", dados.codfor, router, 1);
+          await servicesForms("UPDATE", table, "", data.codfor, router, 1);
         }
 
         Alert.alert("Sucesso", msg + " efetuada com sucesso");

@@ -4,7 +4,7 @@ import * as SQLite from  'expo-sqlite'
 import { tables } from '../db/tables';
 import {v4 as uuidv4} from "uuid";
 
-export default async function servicesForms(action, table, method, data, router, sync, dataDel){
+export default async function servicesForms(action, table, method, data, router, sync, dataDel, nomfor){
 
     const db = await SQLite.openDatabaseAsync('producao');
 
@@ -58,18 +58,20 @@ export default async function servicesForms(action, table, method, data, router,
                         console.log(error);
                     }
                 }
-
                 else if (method === 'ALL') {
                     try {
-                        var query = `SELECT * FROM ${tables.formularios}`; 
-                        var query2 = `SELECT * FROM ${tables.respostas_formularios}`
+                        var query = `SELECT f.*, c.nomcli
+                            FROM ${tables.formularios} f
+                            JOIN ${tables.clientes} c ON f.codcli = c.codcli
+                        `;
+                        var query2 = `SELECT * 
+                                        FROM ${tables.respostas_formularios}`;
                         if(dataDel == 1){ //signfica que quer deletar
                             query = query + ' WHERE SITSIN NOT IN (1)';
                             query2 = query2 + ` ,${tables.formularios} WHERE ${tables.formularios}.codfor = ${tables.respostas_formularios}.codfor
                                                 AND ${tables.formularios}.sitsin NOT IN (1)`;
-                            console.log('query 1: ' + query);
-                            console.log('query 1: ' + query2);
                         }
+
                         const forms = await db.getAllAsync(query);
                         if (!forms || forms.length === 0) {
                         result = [];
@@ -92,24 +94,27 @@ export default async function servicesForms(action, table, method, data, router,
                         console.log(error);
                     }
                 }
-
             }
         }
 
       if(action == 'INSERT'){
             var idForm;
+            var sitsin;
             if(!data.codfor){
                 idForm = uuidv4();
+                sitsin = 1;
             }
             else {
                 idForm = data.codfor;
+                sitsin = 2;
             }
+            
             if(table == tables.formularios){
                 try { 
                     /*insere respostas*/
                     db.withTransactionAsync(async () => {
-                        const result = await db.runAsync(`INSERT INTO ${tables.formularios} (codfor, tipfor, codage, codcli, descri, remrec, codsit, usuger, sitsin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`, 
-                                                        [idForm, data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.usuger]);
+                        const result = await db.runAsync(`INSERT INTO ${tables.formularios} (codfor, tipfor, codage, codcli, descri, remrec, codsit, usuger, sitsin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+                                                        [idForm, data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.usuger, sitsin]);
                     // percorre todas as respostas e insere
                         for (const resposta of data.resfor) {
                             console.log("a resposta")
@@ -134,6 +139,8 @@ export default async function servicesForms(action, table, method, data, router,
                 try {
                     // Se foi chamada através da sincronização
                     if(sync == 1){
+                        console.log('CHAMEI SINC')
+                        console.log(data)
                         const result = await db.runAsync(
                             `UPDATE ${tables.formularios} 
                             SET sitsin = 2 

@@ -23,6 +23,7 @@
     "react-native": "0.79.5",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-element-dropdown": "^2.12.4",
+    "react-native-fs": "^2.20.0",
     "react-native-get-random-values": "^1.11.0",
     "react-native-mask-input": "^1.2.3",
     "react-native-safe-area-context": "5.4.0",
@@ -31,7 +32,8 @@
     "react-native-text-input-mask": "^3.2.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.20.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
