@@ -26,7 +26,6 @@ export default function App() {
     setLoading(true);
     fetchData();
     setLogUsu(login.logusu);
-    setLoading(false);
   }, []);
 
   const fetchData = async () => {
@@ -48,6 +47,7 @@ export default function App() {
       responseFormularios == "ok"
     ) {
       Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
+      setLoading(false);
     }
   };
 

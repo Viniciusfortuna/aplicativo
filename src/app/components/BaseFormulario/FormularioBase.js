@@ -5,6 +5,7 @@ import { Link, useLocalSearchParams } from "expo-router";
 import Save from "./BotaoSave";
 import Sync from "./BotaoSync";
 import LoginContext from "../../contexts/loginContext";
+import NetInfo from "@react-native-community/netinfo";
 
 // Serviços
 import services from "../../functions/services/clients/servicesClient";
@@ -29,7 +30,8 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
   const [clientes, setClientes] = useState([]);
   const [agentes, setAgentes] = useState([]);
   const { login } = useContext(LoginContext);
-  const { id } = useLocalSearchParams();
+  const { id, idtipfor } = useLocalSearchParams();
+  const [isConnected, setIsConnected] = useState(false);
 
   // Dados que vão para o backend
   const data = {
@@ -46,6 +48,12 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
     })),
     codfor: id
   };
+
+  useEffect(() => {
+    if (idtipfor) {
+      setTipfor(idtipfor); // garante que tipfor já recebe o valor da URL
+    }
+  }, [idtipfor]);
 
   // 1️⃣ Carrega opções gerais (clientes, agentes, situações)
   useEffect(() => {
@@ -100,7 +108,13 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
       const loadTipos = async () => {
         const resultTipos = await servicesTipoFormulario("SELECT", tables.tipo_formulario, "ALL", "");
         setDataTipo(resultTipos);
-        setTipfor(resultTipos[0]?.tipfor || "");
+        console.log(idtipfor + "esse é o di")
+        if (idtipfor) {
+          const existe = resultTipos.find(t => t.tipfor.toString() === idtipfor.toString());
+          setTipfor(existe ? existe.tipfor : resultTipos[0]?.tipfor || "");
+        } else {
+          setTipfor(resultTipos[0]?.tipfor || "");
+        }
       };
       loadTipos();
     }
@@ -230,7 +244,7 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
 
       {/* Botões */}
       <Save acao={acao} table={table} data={data} desc={desc} msg={msg} />
-      {acao !== "INSERT" && (
+      {acao !== "INSERT" && isConnected && (
         <Sync
           method={method}
           dados={data}

@@ -144,7 +144,7 @@ export default function FormulariosListagem({ table, type }) {
           </View>
         )}
         ListFooterComponent={
-          <Link style={style.linkStyle} href={"/"}>
+          <Link style={style.linkStyle} href={"/home"}>
             Voltar
           </Link>
         }

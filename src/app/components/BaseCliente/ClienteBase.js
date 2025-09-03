@@ -64,8 +64,8 @@ export default function ClienteBase({
   };
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={style.container}>
+    // <SafeAreaProvider>
+      <ScrollView style={style.container}>
         <View style={style.inputContainer}>
           <Text style={style.label}>Nome</Text>
           <TextInput
@@ -114,9 +114,13 @@ export default function ClienteBase({
             mask={Masks.BRL_PHONE}
           />
         </View>
-        <LinkCustom></LinkCustom>
-      </SafeAreaView>
-    </SafeAreaProvider>
+        <View style={style.container}>
+            <Link style={style.linkStyle} href="/home">
+                Voltar
+            </Link>
+        </View>
+      </ScrollView>
+    // </SafeAreaProvider>
   );
 }
 

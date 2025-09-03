@@ -4,8 +4,8 @@ import { View, StyleSheet } from "react-native";
 export default function LinkCustom() {
   return (
     <View style={style.container}>
-      <Link style={style.linkStyle} href="/clients/read/not_sync">
-        Não Sincronizados
+      <Link style={style.linkStyle} href="/home">
+        
       </Link>
       <Link style={style.linkStyle} href="/clients/read/sync">
         Sincronizados
