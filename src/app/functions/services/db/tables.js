@@ -6,5 +6,6 @@ export const tables = {
     situacao: "situacao",
     users: "users",
     formularios: "formularios",
-    respostas_formularios: "respostas_formularios"
+    respostas_formularios: "respostas_formularios",
+    users_sessions: "users_sessions"
 }

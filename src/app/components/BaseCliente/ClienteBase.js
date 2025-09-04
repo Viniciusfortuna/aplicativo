@@ -115,7 +115,7 @@ export default function ClienteBase({
           />
         </View>
         <View style={style.container}>
-            <Link style={style.linkStyle} href="/home">
+            <Link style={style.linkStyle} href="/clients/read/sync/">
                 Voltar
             </Link>
         </View>

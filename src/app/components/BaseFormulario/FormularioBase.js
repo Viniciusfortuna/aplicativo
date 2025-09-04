@@ -31,7 +31,12 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
   const [agentes, setAgentes] = useState([]);
   const { login } = useContext(LoginContext);
   const { id, idtipfor } = useLocalSearchParams();
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+
+  useEffect(async () => {
+    const netState = await NetInfo.fetch();
+    setIsConnected(netState.isConnected);
+  }, []);
 
   // Dados que vão para o backend
   const data = {
@@ -229,7 +234,7 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
         />
       </View>
 
-      {/* Perguntas Dinâmicas */}
+      {/* Perguntas Dinâmicas
       {perguntas.map((perg) => (
         <View key={perg.idperg} style={style.inputContainer}>
           <Text style={style.label}>{perg.desprg}</Text>
@@ -239,6 +244,42 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
             value={respostas[perg.idperg] || ""}
             onChangeText={(txt) => handleResposta(perg.idperg, txt)}
           />
+        </View>
+      ))} */}
+        {/* Perguntas Dinâmicas */}
+      {perguntas.map((perg) => (
+        <View key={perg.idperg} style={style.inputContainer}>
+          <Text style={style.label}>{perg.desprg}</Text>
+
+          {perg.tipper === "SIM_NAO" ? (
+            <View style={style.toggleContainer}>
+              <Text
+                style={[
+                  style.toggleButton,
+                  respostas[perg.idperg] === "SIM" && style.selectedYes,
+                ]}
+                onPress={() => handleResposta(perg.idperg, "S")}
+              >
+                Sim
+              </Text>
+              <Text
+                style={[
+                  style.toggleButton,
+                  respostas[perg.idperg] === "NAO" && style.selectedNo,
+                ]}
+                onPress={() => handleResposta(perg.idperg, "N")}
+              >
+                Não
+              </Text>
+            </View>
+          ) : (
+            <TextInput
+              style={style.inputText}
+              placeholder={`Resposta (${perg.tipper})`}
+              value={respostas[perg.idperg] || ""}
+              onChangeText={(txt) => handleResposta(perg.idperg, txt)}
+            />
+          )}
         </View>
       ))}
 
@@ -325,4 +366,29 @@ const style = StyleSheet.create({
     height: 30,
     fontSize: 16,
   },
+  toggleContainer: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginTop: 5,
+},
+toggleButton: {
+  flex: 1,
+  textAlign: "center",
+  paddingVertical: 10,
+  marginHorizontal: 5,
+  borderRadius: 8,
+  borderWidth: 1,
+  borderColor: "#ccc",
+  backgroundColor: "#f9f9f9",
+},
+selectedYes: {
+  backgroundColor: "#4CAF50",
+  color: "white",
+  borderColor: "#4CAF50",
+},
+selectedNo: {
+  backgroundColor: "#F44336",
+  color: "white",
+  borderColor: "#F44336",
+},
 });

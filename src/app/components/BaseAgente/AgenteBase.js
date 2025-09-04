@@ -129,7 +129,11 @@ export default function AgenteBase({
           placeholder="dd/mm/aaaa"
         />
       </View>
-      <LinkCustom />
+      <View style={style.container}>
+          <Link style={style.linkStyle} href="/agents/read/sync/">
+              Voltar
+          </Link>
+      </View>
     </ScrollView>
   );
 }
@@ -141,7 +145,7 @@ const style = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 20,
     paddingHorizontal: 15,
-    gap: 20,
+    gap: 10,
   },
   inputContainer: {
     width: "100%",

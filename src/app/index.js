@@ -7,22 +7,21 @@ import {
   TextInput,
   ScrollView,
   Alert,
-  Button,
-  Modal,
-  ActivityIndicator,
 } from "react-native";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
+
 import sync_login from "./functions/services/login/serviceSyncL";
 import LoginContext from "./contexts/loginContext";
 import migrations from "./functions/services/db/migrations";
-import Icon from "react-native-vector-icons/Feather"; // Ícone de olho
-import IconB from "react-native-vector-icons/FontAwesome"; // Ícone de olho
+import servicesUsers from "./functions/services/users/servicesUser";
 import ModalLoading from "./components/Modal/modalLoading";
+import Icon from "react-native-vector-icons/Feather";
 
 export default function LoginBase() {
   const router = useRouter();
-  const { login, setLogin } = useContext(LoginContext);
+  const { setLogin } = useContext(LoginContext);
   const [foco, setFoco] = useState(false);
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -32,34 +31,11 @@ export default function LoginBase() {
     password: "",
   });
 
-  const Enter = async () => {
-    try {
-      setLoading(true);
-      const response = await sync_login(userLogin, "POST");
-      console.log(response);
-      if (response.status == 200) {
-        const result = await AsyncStorage.setItem(
-          response.data.logusu,
-          JSON.stringify(response.data)
-        );
-        setLogin(response.data);
-        router.push("/home");
-      } else {
-        Alert.alert("Erro", "Credenciais inválidas ou usuário inativo");
-        setLoading(false);
-      }
-    } catch (error) {
-      Alert.alert("ERRO", "Não foi possível completar sua solicitação");
-      setLoading(false);
-    }
-  };
-
   const migration = async () => {
     try {
-      const response = await migrations();
-      console.log(response);
+      await migrations();
     } catch (error) {
-      console.log(error);
+      console.log("Erro migrations:", error);
     }
   };
 
@@ -68,41 +44,109 @@ export default function LoginBase() {
     migration();
   }, []);
 
+  const Enter = async () => {
+    setLoading(true);
+    try {
+      const netState = await NetInfo.fetch();
+      const isOnline = netState.isConnected;
+
+      let session;
+
+      if (isOnline) {
+        // LOGIN ONLINE
+        const response = await sync_login(userLogin, "POST");
+        if (response.status === 200) {
+          const data = response.data;
+
+          // Salvar sessão no SQLite
+          await servicesUsers("INSERT", "users_session", null, {
+            codusu: data.codusu,
+            logusu: data.logusu,
+            password: userLogin.password,
+            token: data.token,
+            is_offline: 0,
+          });
+
+          // Salvar no AsyncStorage
+          await AsyncStorage.setItem("currentSession", JSON.stringify(data));
+          session = data;
+        } else {
+          Alert.alert("Erro", "Credenciais inválidas ou usuário inativo");
+          setLoading(false);
+          return;
+        }
+      } else {
+        // LOGIN OFFLINE
+        const offlineResult = await servicesUsers("SELECT", "users_session", "ID", {
+          logusu: userLogin.logusu,
+          password: userLogin.password,
+        });
+
+        if (!offlineResult || offlineResult.length === 0) {
+          Alert.alert(
+            "Erro",
+            "Sem internet e credenciais não encontradas offline"
+          );
+          setLoading(false);
+          return;
+        }
+
+        session = { ...offlineResult[0], is_offline: 1 };
+
+        // Atualiza o last_login offline
+        await servicesUsers("UPDATE", "users_session", null, session);
+
+        await AsyncStorage.setItem("currentSession", JSON.stringify(session));
+      }
+
+      // Atualiza contexto global
+      setLogin(session);
+      router.push("/home");
+    } catch (error) {
+      Alert.alert("Erro", error.message || "Falha ao realizar login");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={style.container}>
-      <ModalLoading loading={loading}></ModalLoading>
+      <ModalLoading loading={loading} />
       <View style={style.inputContainer}>
         <Text style={style.label}>Login</Text>
         <TextInput
           style={foco === "logusu" ? style.LayoutEvent : style.inputText}
-          onFocus={(e) => setFoco("logusu")}
-          onBlur={(e) => setFoco(false)}
+          onFocus={() => setFoco("logusu")}
+          onBlur={() => setFoco(false)}
           value={userLogin.logusu}
           onChangeText={(e) => setUserLogin({ ...userLogin, logusu: e })}
-          placeholder="Digite seu nome"
+          placeholder="Digite seu login"
         />
       </View>
+
       <View style={style.inputContainer}>
         <Text style={style.label}>Senha</Text>
         <View style={style.inputLogin}>
           <TextInput
             keyboardType="visible-password"
-            onFocus={(e) => setFoco("password")}
-            onBlur={(e) => setFoco(false)}
-            secureTextEntry={mostrarSenha}
+            onFocus={() => setFoco("password")}
+            onBlur={() => setFoco(false)}
+            secureTextEntry={!mostrarSenha}
             style={foco === "password" ? style.LayoutEvent : style.inputText}
             value={userLogin.password}
             onChangeText={(e) => setUserLogin({ ...userLogin, password: e })}
-          ></TextInput>
+          />
           <Pressable onPress={() => setMostrarSenha(!mostrarSenha)}>
             <Icon
-              name={mostrarSenha ? "eye" : "eye-off"}
+              name={mostrarSenha ? "eye-off" : "eye"}
               size={24}
               color="#665"
             />
           </Pressable>
         </View>
       </View>
+
       <Pressable style={style.linkStyle} onPress={Enter}>
         <Text style={style.label}>Entrar</Text>
       </Pressable>
@@ -119,7 +163,6 @@ const style = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 15,
     gap: 20,
-    borderWidth: 1,
   },
   inputContainer: {
     width: "100%",
@@ -128,19 +171,16 @@ const style = StyleSheet.create({
   },
   inputLogin: {
     width: "100%",
-    alignItems: "center",
-    marginBottom: 15,
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 13,
+    alignItems: "center",
   },
   label: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 5,
-    alignItems: "center",
-    justifyContent: "center",
   },
   inputText: {
     width: "80%",
@@ -159,9 +199,6 @@ const style = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    textAlign: "center",
-    textAlignVertical: "center",
-    color: "#000",
     fontSize: 14,
     fontWeight: "bold",
     shadowColor: "#000",

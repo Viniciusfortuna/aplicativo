@@ -4,14 +4,26 @@ export default async function migrations(){
 
     try {
       const createMigrations = await db.execAsync(`
-      DROP TABLE IF EXISTS respostas_formularios;
-      DROP TABLE IF EXISTS formularios;
-      DROP TABLE IF EXISTS perguntas_tipo_formulario;
-      DROP TABLE IF EXISTS tipo_formulario;
-      DROP TABLE IF EXISTS agentes_saude;
-      DROP TABLE IF EXISTS clientes;
-      DROP TABLE IF EXISTS situacao;
-      DROP TABLE IF EXISTS users;
+     -- DROP TABLE IF EXISTS respostas_formularios;
+     -- DROP TABLE IF EXISTS formularios;
+     -- DROP TABLE IF EXISTS perguntas_tipo_formulario;
+     -- DROP TABLE IF EXISTS tipo_formulario;
+     -- DROP TABLE IF EXISTS agentes_saude;
+     -- DROP TABLE IF EXISTS clientes;
+     -- DROP TABLE IF EXISTS situacao;
+     -- DROP TABLE IF EXISTS users;
+     -- DROP TABLE IF EXISTS users_sessions;
+
+      CREATE TABLE IF NOT EXISTS users_session (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          codusu TEXT NOT NULL,
+          logusu TEXT NOT NULL,
+          token TEXT,                -- opcional, para login online
+          password TEXT,             -- criptografada ou hash
+          last_login DATETIME,       -- quando fez login
+          is_offline INTEGER DEFAULT 0,  -- 1 = offline, 0 = online
+          expires_at DATETIME        -- opcional, para expiração
+      );
 
       CREATE TABLE clientes (
         codcli INTEGER PRIMARY KEY AUTOINCREMENT,

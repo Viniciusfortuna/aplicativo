@@ -16,6 +16,7 @@ import SincronizaAgentes from "../functions/services/agents/sincronizaAgentes";
 import SincronizaTipoFormularios from "../functions/services/tipo_formularios/sincronizaTipoFormularios";
 import SincronizaPerguntasTipoFormulario from "../functions/services/perguntas_tipo_formularios/sincronizaPerguntasTipoFormularios";
 import SincronizaForms from "../functions/services/forms/sincronizaFormularios";
+import NetInfo from "@react-native-community/netinfo"
 
 export default function App() {
   const [logusu, setLogUsu] = useState("");
@@ -29,25 +30,33 @@ export default function App() {
   }, []);
 
   const fetchData = async () => {
-    const responseCli = await SincronizaClientes();
-    const responseAge = await SincronizaAgentes();
-    const responseUse = await SincronizaUsuarios();
-    const responseSit = await SincronizaSituacao();
-    const responseTipoFormularios = await SincronizaTipoFormularios();
-    const responsePeguntasTipoFormularios = await SincronizaPerguntasTipoFormulario();
-    const responseFormularios = await SincronizaForms();
+    const netState = await NetInfo.fetch();
+    if(!netState.isConnected) return;
 
-    if (
-      responseAge === "ok" &&
-      responseCli === "ok" &&
-      responseUse === "ok" &&
-      responseSit === "ok" &&
-      responseTipoFormularios == "ok" &&
-      responsePeguntasTipoFormularios == "ok" &&
-      responseFormularios == "ok"
-    ) {
-      Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
-      setLoading(false);
+    try {
+        const responseCli = await SincronizaClientes();
+        const responseAge = await SincronizaAgentes();
+        const responseUse = await SincronizaUsuarios();
+        const responseSit = await SincronizaSituacao();
+        const responseTipoFormularios = await SincronizaTipoFormularios();
+        const responsePeguntasTipoFormularios = await SincronizaPerguntasTipoFormulario();
+        const responseFormularios = await SincronizaForms();
+
+        if (
+          responseAge === "ok" &&
+          responseCli === "ok" &&
+          responseUse === "ok" &&
+          responseSit === "ok" &&
+          responseTipoFormularios === "ok" &&
+          responsePeguntasTipoFormularios === "ok" &&
+          responseFormularios === "ok"
+        ) {
+          Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
+          setLoading(false);
+        } 
+    } catch (error) {
+        Alert.alert("Erro", "Houve um erro ao sincronizar!");
+        setLoading(false);
     }
   };
 
