@@ -8,8 +8,6 @@ export default async function sync_users(method, data, action, id){
                     'Content-Type': 'application/json',
                 }
             });
-            // console.log(result)
-            // console.log(result.json())
             return {
                 status: result.status,
                 data: await result.json(),

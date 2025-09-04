@@ -34,7 +34,6 @@ export default async function sync_TipoFormulario(method, data, action, id){
                     'Content-Type': 'application/json',
                 }
             });  
-            console.log(result)
             return result.json()
         } catch (error) {
             return error;

@@ -43,8 +43,6 @@ export default function AgenteBase({
     datnas: datnas || null,
   };
 
-  console.log("Ação é " + acao);
-
   if (acao !== "INSERT") {
     useEffect(() => {
       fetchData();

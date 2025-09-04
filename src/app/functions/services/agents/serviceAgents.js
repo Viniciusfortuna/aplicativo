@@ -15,18 +15,16 @@ export default async function servicesAgents(action, table, method, data, router
                         result = await db.getAllAsync('SELECT *   \
                             FROM '+tables.agentes+' WHERE codage = ?', [data]);
                     } catch (error) {
-                        console.log(error)
+                        console.log('erro ao selecionar (serviceAgents - ID):' +  error);
                     }
-                    console.log(result);   
                 }                
                 else if(method == 'ALL'){
                     try {
                         result = await db.getAllAsync('SELECT *   \
                             FROM '+tables.agentes);
                     } catch (error) {
-                        console.log(error)
+                        console.log('erro ao selecionar (serviceAgents - ALL):' +  error);
                     }
-                    console.log(result); 
                 }
             }
       }
@@ -38,9 +36,8 @@ export default async function servicesAgents(action, table, method, data, router
                     router.push('/agents/read/sync');
                     console.log(result.lastInsertRowId, result.changes);
                 } catch (error) {
-                    console.log('erro ao inserir ' +  error);
+                    console.log('erro ao inserir (serviceAgents): ' +  error);
                 }
-                console.log(result); 
             }
         }
 
@@ -48,16 +45,15 @@ export default async function servicesAgents(action, table, method, data, router
             if(table == tables.agentes){
                 try {
                     if(sync == 1){
-                        const result = await db.runAsync('UPDATE '+tables.agentes+' set sitsin = 2 where codage = ?', [data]);
+                        const result = await db.runAsync('UPDATE '+tables.agentes+' set nomage = ?, emaage = ?, cpfage = ?, telage = ?, funage = ?, datnas = ? where codage = ?', [data.nomcli, data.emacli, data.cpfcli, data.datnas, data.telcli, data.codcli]);
                     }
                     else {
-                        const result = await db.runAsync('UPDATE '+tables.agentes+' set nomage = ?, emaage = ?, cpfage = ?, telage = ?, funage = ?, datnas = ?, sitsin = 1 where codage = ?', [data.nomcli, data.emacli, data.cpfcli, data.datnas, data.telcli, data.codcli]);
+                        const result = await db.runAsync('UPDATE '+tables.agentes+' set nomage = ?, emaage = ?, cpfage = ?, telage = ?, funage = ?, datnas = ? where codage = ?', [data.nomcli, data.emacli, data.cpfcli, data.datnas, data.telcli, data.codcli]);
                     }
                     
                 } catch (error) {
-                    console.log('erro ao atualizar ' +  error);
+                    console.log('erro ao atualizar (serviceAgents): ' +  error);
                 }
-                console.log(result); 
             }
         }
 
@@ -67,9 +63,8 @@ export default async function servicesAgents(action, table, method, data, router
                     const result = await db.runAsync('DELETE FROM '+tables.agentes+' where codage = ?', [data]);
                     console.log(result.changes);
                 } catch (error) {
-                    console.log('erro ao deletar dado ' +  error);
-                }
-                console.log(result); 
+                    console.log('erro ao deletar dado (serviceAgents) :' +  error);
+                } 
             }
         }     
     return result;

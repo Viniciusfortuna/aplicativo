@@ -17,7 +17,15 @@ export default async function servicesPerguntasTipoFormulario(action, table, met
         } catch (error) {
           console.log('Erro no SELECT por ID:', error);
         }
-      } else if (method === 'ALL') {
+      }
+      else if (method === 'ID_TIPFOR') {
+        try {
+          result = await db.getAllAsync(`SELECT * FROM ${tableDb} where tipfor = ?`, [data]);
+        } catch (error) {
+          console.log('Erro no SELECT ID_FORM:', error);
+        }
+      }
+      else if (method === 'ALL') {
         try {
           result = await db.getAllAsync(`SELECT * FROM ${tableDb}`);
         } catch (error) {

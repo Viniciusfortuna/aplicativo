@@ -12,9 +12,7 @@ export default async function SincronizaClientes(){
             const result = await sync_clients('GET', '', 'ID', item.codcli);
             if(!result){
                 const result = services('DELETE', tables.clientes, '', item.codcli, '', '');
-                console.log(result)
             }
-            console.log(item.codcli)
         });
 
         const data = await sync_clients('GET', '');
@@ -28,7 +26,6 @@ export default async function SincronizaClientes(){
                 }
                 else {
                     const result = services('INSERT', tables.clientes, '', item, '', '');
-                    console.log(item)
                 }
             })
             });

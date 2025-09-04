@@ -9,8 +9,7 @@ export default async function SincronizaTipoFormularios(){
     try {
         const data_off = await servicesTipoFormulario('SELECT', tables.tipo_formulario, 'ALL', '');
         data_off.forEach(async (item) =>{
-          const result = await ('GET', '', 'ID', item.tipfor);
-    
+          const result = await sync_TipoFormulario('GET', '', 'ID', item.tipfor);
           if(!result){
               const result = servicesTipoFormulario('DELETE', tables.tipo_formulario, '', item.tipfor, '', '');
               console.log(result)
@@ -21,7 +20,6 @@ export default async function SincronizaTipoFormularios(){
         if (data.length > 0) {
           console.log("tem mais do que 0");
           data.forEach((item) => {
-            console.log(item)
             const result = servicesTipoFormulario('SELECT', tables.tipo_formulario, 'ID', item.tipfor, '', '');
             result.then((value)=>{
               if(value.length > 0){

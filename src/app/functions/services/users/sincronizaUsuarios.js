@@ -6,6 +6,7 @@ export default async function SincronizaUsuarios() {
   //Verifica os clientes que não existem na API, e deleta
   try {
     const data_off = await servicesUsers("SELECT", "users", "ALL", "");
+    console.log('verifica users')
     data_off.forEach(async (item) => {
       const result = await sync_users("GET", "", "ID", item.codusu);
       if (!result) {
@@ -17,9 +18,7 @@ export default async function SincronizaUsuarios() {
           "",
           ""
         );
-        console.log(result);
       }
-      console.log(item.codusu);
     });
 
     const data = await sync_users("GET", "");
@@ -29,14 +28,14 @@ export default async function SincronizaUsuarios() {
           "SELECT",
           "users",
           "ID",
-          item.codusu,
+          item,
           "",
           ""
         );
         result.then((value) => {
+          console.log('resultado do valie' + value.length)
           if (value.length > 0) {
             const result = servicesUsers("UPDATE", "users", "", item, "", "");
-            console.log(result);
           } else {
             const result = servicesUsers("INSERT", "users", "", item, "", "");
           }

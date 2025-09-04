@@ -9,11 +9,8 @@ export default function SaveAgente({ acao, table, method, data, desc, msg }) {
   const router = useRouter();
 
   const SaveData = async () => {
-    console.log(method + "aqui");
-    console.log(data);
     try {
       const result = await servicesAgents(acao, table, method, data, router, 0);
-      // router.push('/clients/read/not_sync');
       Alert.alert("Sucesso", msg + " efetuada com sucesso");
     } catch (error) {
       console.log(error);

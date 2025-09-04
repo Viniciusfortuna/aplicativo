@@ -25,7 +25,6 @@ export default async function servicesTipoFormulario(action, table, method, data
                     } catch (error) {
                         console.log(error)
                     }
-                    console.log(result); 
                 }
             }
       }
@@ -37,7 +36,6 @@ export default async function servicesTipoFormulario(action, table, method, data
             } catch (error) {
                 console.log('erro ao inserir ' +  error);
             }
-            console.log(result); 
         }
     }
 
@@ -54,7 +52,6 @@ export default async function servicesTipoFormulario(action, table, method, data
             } catch (error) {
                 console.log('erro ao atualizar ' +  error);
             }
-            console.log(result); 
         }
     }
 
@@ -65,7 +62,6 @@ export default async function servicesTipoFormulario(action, table, method, data
             } catch (error) {
                 console.log('erro ao deletar dado ' +  error);
             }
-            console.log(result); 
         }
     }     
     return result;

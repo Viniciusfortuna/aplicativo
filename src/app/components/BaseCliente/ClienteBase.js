@@ -64,7 +64,6 @@ export default function ClienteBase({
   };
 
   return (
-    // <SafeAreaProvider>
       <ScrollView style={style.container}>
         <View style={style.inputContainer}>
           <Text style={style.label}>Nome</Text>
@@ -120,7 +119,6 @@ export default function ClienteBase({
             </Link>
         </View>
       </ScrollView>
-    // </SafeAreaProvider>
   );
 }
 
