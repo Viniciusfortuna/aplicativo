@@ -41,8 +41,8 @@ export default async function servicesPerguntasTipoFormulario(action, table, met
       try {
         // idperg é autoincrement, não precisa inserir
         result = await db.runAsync(
-          `INSERT INTO ${tableDb} (desprg, tipper, tipfor) VALUES (?, ?, ?)`,
-          [data.desprg, data.tipper, data.tipfor]
+          `INSERT INTO ${tableDb} (idperg, desprg, tipper, tipfor) VALUES (?,?, ?, ?)`,
+          [data.idperg, data.desprg, data.tipper, data.tipfor]
         );
       } catch (error) {
         console.log('Erro ao inserir:', error);

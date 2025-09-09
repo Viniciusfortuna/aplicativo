@@ -1,4 +1,5 @@
 import { apiRaiz } from "../api/source";
+import { fetchWithAuth } from "../middleware/fetchWithAuth";
 
 export default async function sync_clients(method, data, action, id){
     const param = 'clients/';
@@ -29,11 +30,8 @@ export default async function sync_clients(method, data, action, id){
             API_REQ = apiRaiz+param;
         }
         try {
-            const result = await fetch(API_REQ, {
+            const result = await fetchWithAuth(API_REQ, {
                 method:'GET',
-                headers:{
-                    'Content-Type': 'application/json',
-                }
             });  
             return result.json()
         } catch (error) {

@@ -1,15 +1,14 @@
 import { apiRaiz } from "../api/source";
+import { fetchWithAuth } from "../middleware/fetchWithAuth";
 
 export default async function sync_forms(method, data, action, id){
     const param = 'forms/';
     if(method == "POST"){
         try {         
-            const result = await fetch(apiRaiz + param, {
+            console.log(data)
+            const result = await fetchWithAuth(apiRaiz + param, {
                 method:'POST',
                 body:JSON.stringify(data),
-                headers:{
-                    'Content-Type': 'application/json',
-                }
             });
             
             return {
@@ -29,11 +28,8 @@ export default async function sync_forms(method, data, action, id){
             API_REQ = apiRaiz + param;
         }
         try {
-            const result = await fetch(API_REQ, {
+            const result = await fetchWithAuth(API_REQ, {
                 method:'GET',
-                headers:{
-                    'Content-Type': 'application/json',
-                }
             });  
             return result.json()
         } catch (error) {
@@ -47,18 +43,16 @@ export default async function sync_forms(method, data, action, id){
             console.log(data)
             delete data.codfor;
             console.log(data)
-            const result = await fetch(apiRaiz + param + codfor, {
+            const result = await fetchWithAuth(apiRaiz + param + codfor, {
                 method:'PUT',
                 body:JSON.stringify(data),
-                headers:{
-                    'Content-Type': 'application/json',
-                }
                 });
             
         
             return {
                 status: result.status,
-                codfor: codfor,
+                data: await result.json()
+                // codfor: codfor,
             }
         } catch (error) {
             return error;

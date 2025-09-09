@@ -52,7 +52,7 @@ export default function Sync({ method, table, dados, msg, dataDel }) {
         if (method === "POST") {
           await servicesForms("INSERT", table, "", data.data.forms, router, "", dataDel);
         } else if (method === "PUT") {
-          await servicesForms("UPDATE", table, "", data.codfor, router, 1);
+          await servicesForms("UPDATE", table, "", data.data.forms.codfor, router, 1);
         }
 
         Alert.alert("Sucesso", msg + " efetuada com sucesso");

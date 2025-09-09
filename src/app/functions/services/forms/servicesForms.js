@@ -113,7 +113,6 @@ export default async function servicesForms(action, table, method, data, router,
                 // Se foi chamada através da sincronização
                 if(sync == 1){
                     console.log('CHAMEI SINC')
-                    console.log(data)
                     const result = await db.runAsync(
                         `UPDATE ${tables.formularios} 
                         SET sitsin = 2 
