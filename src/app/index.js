@@ -69,6 +69,8 @@ export default function LoginBase() {
 
           // Salvar no AsyncStorage
           await AsyncStorage.setItem("currentSession", JSON.stringify(data));
+          console.log('esse é o data')
+          console.log(data)
           session = data;
         } else {
           Alert.alert("Erro", "Credenciais inválidas ou usuário inativo");
