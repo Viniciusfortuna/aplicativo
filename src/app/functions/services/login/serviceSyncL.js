@@ -1,23 +1,28 @@
 import { fetchWithAuth } from "../middleware/fetchWithAuth";
 
-export default async function sync_login(data, method){
-    if(method == "POST"){
+export default async function sync_login(data, method) {
+    if (method === "POST") {
         try {
             const result = await fetch('https://api-agents-health.onrender.com/login/', {
-                method:'POST',
-                body:JSON.stringify(data),
+                method: 'POST',
                 headers: {
-                    "content-type":"application/json"
-                }
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
             });
-            console.log(result)
-            console.log(result.json())
+
+            const json = await result.json(); // só chama uma vez
+
+            console.log('esse é o result');
+            console.log(json);
+
             return {
                 status: result.status,
-                data: await result.json(),
-            }
+                data: json,
+            };
         } catch (error) {
-            return error;
+            console.error("Erro no fetch:", error);
+            return { status: 500, error };
         }
     }
 }

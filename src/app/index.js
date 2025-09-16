@@ -55,6 +55,7 @@ export default function LoginBase() {
       if (isOnline) {
         // LOGIN ONLINE
         const response = await sync_login(userLogin, "POST");
+        console.log(response.data)
         if (response.status === 200) {
           const data = response.data;
 
