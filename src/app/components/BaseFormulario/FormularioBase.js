@@ -333,11 +333,11 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
         {acao !== "INSERT" && isConnected && (
           <Sync method={method} dados={data} table={table2} msg={msgs} dataDel={id} />
         )}
-        {acao != "INSERT" && (
+        {/* {acao != "INSERT" && (
             <TouchableOpacity style={style.pdfButton} onPress={gerarPDF}>
               <Text style={style.pdfButtonText}>📄 Gerar PDF</Text>
             </TouchableOpacity>
-        )}
+        )} */}
 
         <Link href={"/forms/read/sync"} style={style.link}>Listar</Link>
       </ScrollView>

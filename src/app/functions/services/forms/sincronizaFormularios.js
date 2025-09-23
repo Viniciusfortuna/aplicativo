@@ -30,10 +30,14 @@ export default async function SincronizaForms() {
 
       for (const item of data) {
         const localRecords = await servicesForms('SELECT', tables.formularios, 'ID', item.codfor, '', '');
-        
-        if (localRecords && localRecords.length > 0) {
+
+        if (localRecords && (Array.isArray(localRecords) ? localRecords.length > 0 : Object.keys(localRecords).length > 0)) {
           // Atualiza o registro local
-          await servicesForms('UPDATE', tables.formularios, '', item, '', '');
+          if(localRecords.sitsin === 1){
+              console.log(`Ignorando codfor ${item.codfor} pois sitsin == 1`);
+              continue;
+          }
+          await servicesForms('UPDATE', tables.formularios, '', item, '', 3);
           console.log(`Atualizado localmente: codfor ${item.codfor}`);
         } else {
           // Insere novo registro local

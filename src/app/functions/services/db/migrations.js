@@ -25,7 +25,7 @@ export default async function migrations(){
           expires_at DATETIME        -- opcional, para expiração
       );
 
-      CREATE TABLE clientes (
+      CREATE TABLE IF NOT EXISTS clientes (
         codcli INTEGER PRIMARY KEY AUTOINCREMENT,
         nomcli TEXT NOT NULL,
         emacli TEXT NOT NULL,
@@ -35,7 +35,7 @@ export default async function migrations(){
         datger DATETIME DEFAULT CURRENT_TIMESTAMP
       );
 
-      CREATE TABLE agentes_saude (
+      CREATE TABLE IF NOT EXISTS agentes_saude (
         codage INTEGER PRIMARY KEY AUTOINCREMENT,
         nomage TEXT NOT NULL,
         emaage TEXT NOT NULL,
@@ -46,14 +46,14 @@ export default async function migrations(){
         datger DATETIME
       );
 
-      CREATE TABLE tipo_formulario (
+      CREATE TABLE IF NOT EXISTS tipo_formulario (
         tipfor INTEGER PRIMARY KEY AUTOINCREMENT,
         nomtip TEXT NOT NULL,
         destip TEXT,
         datger DATETIME
       );
 
-      CREATE TABLE perguntas_tipo_formulario (
+      CREATE TABLE IF NOT EXISTS perguntas_tipo_formulario (
         idperg INTEGER PRIMARY KEY AUTOINCREMENT,
         desprg TEXT NOT NULL,
         tipper TEXT NOT NULL,
@@ -61,13 +61,13 @@ export default async function migrations(){
         FOREIGN KEY (tipfor) REFERENCES tipo_formulario (tipfor)
       );
 
-      CREATE TABLE situacao (
+      CREATE TABLE IF NOT EXISTS situacao (
         codsit INTEGER PRIMARY KEY AUTOINCREMENT,
         dessit TEXT NOT NULL,
         datger DATETIME DEFAULT CURRENT_TIMESTAMP
       );
 
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
         codusu INTEGER PRIMARY KEY AUTOINCREMENT,
         nomusu TEXT NOT NULL,
         emausu TEXT NOT NULL UNIQUE,
@@ -76,7 +76,7 @@ export default async function migrations(){
         situsu TEXT DEFAULT 'A'
       );
 
-      CREATE TABLE formularios (
+      CREATE TABLE IF NOT EXISTS formularios (
         codfor TEXT PRIMARY KEY, -- uuid
         tipfor INTEGER NOT NULL,
         codage INTEGER NOT NULL,
@@ -94,7 +94,7 @@ export default async function migrations(){
         FOREIGN KEY (usuger) REFERENCES users (codusu)
       );
 
-      CREATE TABLE respostas_formularios (
+      CREATE TABLE IF NOT EXISTS respostas_formularios (
         codres INTEGER PRIMARY KEY AUTOINCREMENT,
         codfor TEXT NOT NULL,
         idperg INTEGER NOT NULL,

@@ -121,9 +121,20 @@ export default async function servicesForms(action, table, method, data, router,
                     );
                 } else {
                     await db.withTransactionAsync(async () => {
+                        // Chamada através da rotina de sincronização
+                        var StrSitSin;
+
+                        if(sync == 3) {
+                            StrSitSin = 'sitsin = 2';
+                        }
+                        else {
+                            StrSitSin = 'sitsin = 1';
+                        }   
+                        
+
                         await db.runAsync(
                             `UPDATE ${tables.formularios} 
-                            SET tipfor = ?, codage = ?, codcli = ?, descri = ?, remrec = ?, codsit = ?, sitsin = 1 
+                            SET tipfor = ?, codage = ?, codcli = ?, descri = ?, remrec = ?, codsit = ?, ${StrSitSin} 
                             WHERE codfor = ?`,
                             [data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.codfor]
                         );

@@ -23,7 +23,6 @@ export default function Save({ acao, table, method, data, desc, msg }) {
     } catch (error) {
       console.log(error);
     }
-    console.log(result);
   };
 
   return (

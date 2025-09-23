@@ -120,9 +120,9 @@ export default function FormulariosListagem({ table, type }) {
           />
         </View>
 
-        <Pressable style={style.exportButton} onPress={exportToExcel}>
+        {/* <Pressable style={style.exportButton} onPress={exportToExcel}>
           <Text style={{ fontWeight: "bold", color: "#fff" }}>Exportar Excel</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
 
       <FlatList
