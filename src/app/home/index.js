@@ -31,41 +31,48 @@ export default function App() {
 
   const fetchData = async () => {
     const netState = await NetInfo.fetch();
-    if(!netState.isConnected) return;
+    if (!netState.isConnected) return;
 
     try {
-        const responseCli = await SincronizaClientes();
-        const responseAge = await SincronizaAgentes();
-        const responseUse = await SincronizaUsuarios();
-        const responseSit = await SincronizaSituacao();
-        const responseTipoFormularios = await SincronizaTipoFormularios();
-        const responsePeguntasTipoFormularios = await SincronizaPerguntasTipoFormulario();
-        const responseFormularios = await SincronizaForms();
+      // 🔹 1. Executa os independentes em paralelo
+      const [responseCli, responseAge, responseUse, responseSit] = await Promise.all([
+        SincronizaClientes(),
+        SincronizaAgentes(),
+        SincronizaUsuarios(),
+        SincronizaSituacao(),
+      ]);
 
-        if (
-          responseAge === "ok" &&
-          responseCli === "ok" &&
-          responseUse === "ok" &&
-          responseSit === "ok" &&
-          responseTipoFormularios === "ok" &&
-          responsePeguntasTipoFormularios === "ok" &&
-          responseFormularios === "ok"
-        ) {
-          Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
-          setLoading(false);
-        } 
+      // 🔹 2. Executa os dependentes em SEQUÊNCIA
+      const responseTipoFormularios = await SincronizaTipoFormularios();
+      const responsePeguntasTipoFormularios = await SincronizaPerguntasTipoFormulario();
+      const responseFormularios = await SincronizaForms();
+
+      // 🔹 3. Validação dos retornos
+      if (
+        responseAge === "ok" &&
+        responseCli === "ok" &&
+        responseUse === "ok" &&
+        responseSit === "ok" &&
+        responseTipoFormularios === "ok" &&
+        responsePeguntasTipoFormularios === "ok" &&
+        responseFormularios === "ok"
+      ) {
+        Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
+      } else {
+        Alert.alert("Aviso", "Algumas sincronizações não retornaram 'ok'.");
+      }
     } catch (error) {
-        Alert.alert("Erro", "Houve um erro ao sincronizar!");
-        setLoading(false);
+      Alert.alert("Erro", "Houve um erro ao sincronizar!");
+    } finally {
+      setLoading(false);
     }
   };
-
   return (
     <View style={style.container}>
       <Modal transparent={true} animationType="fade" visible={loading}>
-        <View style={style.container}>
+        <View style={style.modalContainer}>
           <ActivityIndicator size="large" color="#FFF" />
-          <Text style={style.label}>Carregando...</Text>
+          <Text style={style.modalText}>Sincronizando...</Text>
         </View>
       </Modal>
 
@@ -118,5 +125,17 @@ const style = StyleSheet.create({
     marginBottom: 5,
     alignItems: "center",
     justifyContent: "center",
+  },
+   modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
   },
 });

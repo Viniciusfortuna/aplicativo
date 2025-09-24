@@ -1,13 +1,17 @@
-import { Pressable, Text, StyleSheet, Alert } from "react-native";
+import React, { useState } from "react";
+import { Pressable, Text, StyleSheet, Alert, Modal, View, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import sync_forms from "../../functions/services/forms/servicesSyncF";
 import servicesForms from "../../functions/services/forms/servicesForms";
 
 export default function Sync({ method, table, dados, msg, dataDel }) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const SyncData = async () => {
+    setLoading(true); // 🔹 ativa o carregamento
     let methodDb;
+
     if (method === "POST") {
       methodDb = "INSERT";
     } else if (method === "PUT") {
@@ -24,12 +28,10 @@ export default function Sync({ method, table, dados, msg, dataDel }) {
       // 🔹 Se for UPDATE, verifica antes se o registro existe no servidor
       if (method === "PUT") {
         const result = await sync_forms("GET", "", "ID", dados.codfor);
-        
+
         if (!result || result.codfor == null) {
           // não existe → cria
           const created = await sync_forms("POST", dados);
-          console.log(created)
-          console.log('dado resposta')
           if (created.status !== 200) {
             Alert.alert("Erro ao sincronizar!");
             return;
@@ -37,15 +39,12 @@ export default function Sync({ method, table, dados, msg, dataDel }) {
           data = created;
         } else {
           // existe → atualiza
-          console.log('estou no atualiza')
           data = await sync_forms("PUT", dados);
         }
       } else {
         // POST, DELETE, GET normais
         data = await sync_forms(method, dados);
       }
-
-      console.log("Resposta servidor:", data);
 
       if (data.status === 200) {
         // 🔹 Atualiza também no SQLite/local
@@ -58,18 +57,29 @@ export default function Sync({ method, table, dados, msg, dataDel }) {
         Alert.alert("Sucesso", msg + " efetuada com sucesso");
       } else {
         Alert.alert("Erro", "Falha na sincronização");
-        console.log("Erro sync:", data);
       }
     } catch (error) {
       console.log("Erro SyncData:", error);
       Alert.alert("Erro", "Falha na comunicação com o servidor");
+    } finally {
+      setLoading(false); // 🔹 desativa o carregamento SEMPRE
     }
   };
 
   return (
-    <Pressable style={style.linkStyle} onPress={SyncData}>
-      <Text style={style.textStyle}>Sincronizar</Text>
-    </Pressable>
+    <>
+      <Pressable style={style.linkStyle} onPress={SyncData} disabled={loading}>
+        <Text style={style.textStyle}>{loading ? "Sincronizando..." : "Sincronizar"}</Text>
+      </Pressable>
+
+      {/* 🔹 Modal de carregamento */}
+      <Modal transparent={true} animationType="fade" visible={loading}>
+        <View style={style.modalContainer}>
+          <ActivityIndicator size="large" color="#FFF" />
+          <Text style={style.modalText}>Sincronizando...</Text>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -91,5 +101,17 @@ const style = StyleSheet.create({
     color: "#000",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#FFF",
   },
 });
