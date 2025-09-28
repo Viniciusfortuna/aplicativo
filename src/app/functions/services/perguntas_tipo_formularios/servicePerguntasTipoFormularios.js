@@ -1,10 +1,12 @@
 import * as SQLite from 'expo-sqlite';
 import { tables } from '../db/tables'; 
+import { getDb } from '../db/db';
 
 export default async function servicesPerguntasTipoFormulario(action, table, method, data, router, sync) {
-  const db = await SQLite.openDatabaseAsync('producao');
+  // const db = await SQLite.openDatabaseAsync('producao.db');
+  const db = await getDb();
   const tableDb = tables.perguntas_tipo_formulario;
-  let result;
+  let result = [];
 
   if (action === 'SELECT') {
     if (table === tableDb) {

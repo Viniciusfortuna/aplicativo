@@ -1,11 +1,13 @@
 import { useRouter } from 'expo-router';
 import * as SQLite from  'expo-sqlite'
 import { tables } from '../db/tables';
+import { getDb } from '../db/db';
 
 export default async function servicesTipoFormulario(action, table, method, data, router, sync){
-    const db = await SQLite.openDatabaseAsync('producao');
+    // const db = await SQLite.openDatabaseAsync('producao.db');
+    const db = await getDb();
     const tableDb = tables.tipo_formulario;
-    var result;
+    var result = [];
     if(action == 'SELECT'){
             if(table == tableDb){
                 if(method == 'ID'){

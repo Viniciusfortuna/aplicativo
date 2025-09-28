@@ -1,10 +1,12 @@
 import { useRouter } from 'expo-router';
 import * as SQLite from  'expo-sqlite'
+import { getDb } from '../db/db';
 
 export default async function servicesSituation(action, table, method, data, router, sync){
 
-    const db = await SQLite.openDatabaseAsync('producao');
-    var result;
+    // const db = await SQLite.openDatabaseAsync('producao.db');
+    const db = await getDb();
+    var result = [];
 
     if(action == 'SELECT'){
             if(table == 'situacao'){

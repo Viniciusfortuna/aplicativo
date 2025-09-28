@@ -3,12 +3,14 @@ import 'react-native-get-random-values'
 import * as SQLite from  'expo-sqlite'
 import { tables } from '../db/tables';
 import {v4 as uuidv4} from "uuid";
+import { getDb } from '../db/db';
 
 export default async function servicesForms(action, table, method, data, router, sync, dataDel, nomfor){
 
-    const db = await SQLite.openDatabaseAsync('producao');
+    // const db = await SQLite.openDatabaseAsync('producao.db');
+    const db = await getDb();
 
-    var result;
+    var result = [];
     if (action === 'SELECT') {
         if (table === tables.formularios) {
 
@@ -87,7 +89,7 @@ export default async function servicesForms(action, table, method, data, router,
         if(table == tables.formularios){
             try { 
                 /*insere respostas*/
-                db.withTransactionAsync(async () => {
+                await db.withTransactionAsync(async () => {
                     const result = await db.runAsync(`INSERT INTO ${tables.formularios} (codfor, tipfor, codage, codcli, descri, remrec, codsit, usuger, sitsin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
                                                     [idForm, data.tipfor, data.codage, data.codcli, data.descri, data.remrec, data.codsit, data.usuger, sitsin]);
                 // percorre todas as respostas e insere
@@ -172,7 +174,6 @@ export default async function servicesForms(action, table, method, data, router,
                             WHERE codfor = ?`,
                             [data]
                         );
-
                         await db.runAsync(`DELETE FROM ${tables.formularios} where codfor = ?`, [data]);
                 });
             } catch (error) {

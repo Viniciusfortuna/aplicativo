@@ -1,12 +1,15 @@
 import { useRouter } from 'expo-router';
 import * as SQLite from  'expo-sqlite'
 import { tables } from '../db/tables';
+import { getDb } from '../db/db';
 
 export default async function servicesAgents(action, table, method, data, router, sync){
 
-    const db = await SQLite.openDatabaseAsync('producao');
+    // const db = await SQLite.openDatabaseAsync('producao.db');
+    const db = await getDb();
+    
 
-    var result;
+    var result = [];
     if(action == 'SELECT'){
             if(table == tables.agentes){
                 if(method == 'ID'){
@@ -33,7 +36,6 @@ export default async function servicesAgents(action, table, method, data, router
             if(table == tables.agentes){
                 try {
                     const result = await db.runAsync('INSERT INTO '+tables.agentes+' (codage, nomage, emaage, cpfage, telage, funage, datnas) VALUES (?, ?, ?, ?, ?, ?, ?)', [data.codage, data.nomage, data.emaage, data.cpfage, data.telage, data.funage, data.datnas]);
-                    router.push('/agents/read/sync');
                     console.log(result.lastInsertRowId, result.changes);
                 } catch (error) {
                     console.log('erro ao inserir (serviceAgents): ' +  error);

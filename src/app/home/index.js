@@ -1,13 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
   Alert,
   Modal,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import { Link } from "expo-router";
 import { Text } from "react-native";
+
 import SincronizaClientes from "../functions/services/clients/sincronizaClientes";
 import SincronizaUsuarios from "../functions/services/users/sincronizaUsuarios";
 import SincronizaSituacao from "../functions/services/situations/sincronizaSituacao";
@@ -18,21 +20,29 @@ import SincronizaPerguntasTipoFormulario from "../functions/services/perguntas_t
 import SincronizaForms from "../functions/services/forms/sincronizaFormularios";
 import NetInfo from "@react-native-community/netinfo"
 
-export default function App() {
-  const [logusu, setLogUsu] = useState("");
-  const { login, setLogin } = useContext(LoginContext);
-  const [loading, setLoading] = useState(false);
 
+export default function App() {
+  const { login } = useContext(LoginContext);
+  const [logusu, setLogUsu] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+
+  // Verifica a conexão com a internet
   useEffect(() => {
-    setLoading(true);
-    fetchData();
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+    });
     setLogUsu(login.logusu);
+    return () => unsubscribe();
   }, []);
 
-  const fetchData = async () => {
-    const netState = await NetInfo.fetch();
-    if (!netState.isConnected) return;
+  const handleSync = async () => {
+    if (!isConnected) {
+      Alert.alert("Sem conexão", "Você precisa estar conectado à internet para sincronizar.");
+      return;
+    }
 
+    setLoading(true);
     try {
       // 🔹 1. Executa os independentes em paralelo
       const [responseCli, responseAge, responseUse, responseSit] = await Promise.all([
@@ -42,19 +52,19 @@ export default function App() {
         SincronizaSituacao(),
       ]);
 
-      // 🔹 2. Executa os dependentes em SEQUÊNCIA
+      // 🔹 2. Executa os dependentes em sequência
       const responseTipoFormularios = await SincronizaTipoFormularios();
-      const responsePeguntasTipoFormularios = await SincronizaPerguntasTipoFormulario();
+      const responsePerguntasTipoFormulario = await SincronizaPerguntasTipoFormulario();
       const responseFormularios = await SincronizaForms();
 
-      // 🔹 3. Validação dos retornos
+      // 🔹 3. Validação
       if (
         responseAge === "ok" &&
         responseCli === "ok" &&
         responseUse === "ok" &&
         responseSit === "ok" &&
         responseTipoFormularios === "ok" &&
-        responsePeguntasTipoFormularios === "ok" &&
+        responsePerguntasTipoFormulario === "ok" &&
         responseFormularios === "ok"
       ) {
         Alert.alert("Sucesso", "Sincronização realizada com sucesso!");
@@ -67,6 +77,7 @@ export default function App() {
       setLoading(false);
     }
   };
+
   return (
     <View style={style.container}>
       <Modal transparent={true} animationType="fade" visible={loading}>
@@ -76,7 +87,15 @@ export default function App() {
         </View>
       </Modal>
 
-      <Text style={style.label}> Olá, {logusu}</Text>
+      <Text style={style.label}>Olá, {logusu}</Text>
+
+      {/* Botão de sincronização */}
+      <Button
+        title="Sincronizar dados"
+        onPress={handleSync}
+        disabled={!isConnected || loading}
+      />
+
       <Link style={style.buttonLink} href="/tipo_formularios/read/sync">
         Formulários
       </Link>
@@ -87,7 +106,7 @@ export default function App() {
         Clientes
       </Link>
       <Link style={style.buttonLink} href="/forms/read/sync">
-        Listar Formularios
+        Listar Formulários
       </Link>
     </View>
   );
@@ -99,14 +118,14 @@ const style = StyleSheet.create({
     backgroundColor: "#F3F3FF",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8, // Espaçamento entre os botões
+    gap: 8,
     paddingHorizontal: 20,
   },
   buttonLink: {
     width: "100%",
     height: 50,
     backgroundColor: "#FFFFFF",
-    color: "#000", // Cor do texto
+    color: "#000",
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
@@ -116,7 +135,7 @@ const style = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5, // Sombra no Android
+    elevation: 5,
   },
   label: {
     fontSize: 16,
@@ -126,7 +145,7 @@ const style = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-   modalContainer: {
+  modalContainer: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.6)",
     alignItems: "center",

@@ -1,8 +1,10 @@
 import * as SQLite from "expo-sqlite";
+import { getDb } from "../db/db";
 
 export default async function servicesUsers(action, table, method, data) {
-  const db = await SQLite.openDatabaseAsync("producao");
-  let result;
+  // const db = await SQLite.openDatabaseAsync("producao.db");
+  const db = await getDb();
+  let result = [];
 
   // Defina o tempo de expiração da sessão em horas, se necessário
   const expiracaoHoras = 24;

@@ -1,6 +1,8 @@
 import * as SQLite from 'expo-sqlite'
+import { getDb } from './db';
 export default async function migrations(){
-    const db = await SQLite.openDatabaseAsync('producao');
+    // const db = await SQLite.openDatabaseAsync('producao.db');
+    const db = await getDb();
 
     try {
       const createMigrations = await db.execAsync(`
@@ -107,6 +109,7 @@ export default async function migrations(){
         `);
         return createMigrations;
     } catch (error) {
+        console.log(error)
         return error;
     }
 }
