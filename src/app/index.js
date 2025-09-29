@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Image
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -36,6 +37,7 @@ export default function LoginBase() {
       await migrations();
     } catch (error) {
       console.log("Erro migrations:", error);
+      Alert.alert("Erro:", error);
     }
   };
 
@@ -117,6 +119,13 @@ export default function LoginBase() {
     <ScrollView contentContainerStyle={style.container}>
       <ModalLoading loading={loading} />
       <View style={style.inputContainer}>
+          <Image 
+          source={require("../../assets/icon.png")}
+          style={style.logo}
+         />
+      </View>
+
+      <View style={style.inputContainer}>
         <Text style={style.label}>Login</Text>
         <TextInput
           style={foco === "logusu" ? style.LayoutEvent : style.inputText}
@@ -185,6 +194,11 @@ const style = StyleSheet.create({
     color: "#333",
     marginBottom: 5,
   },
+    label2: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
   inputText: {
     width: "80%",
     height: 40,
@@ -220,4 +234,8 @@ const style = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#D1D5DB",
   },
+  logo: {
+  width: 120,
+  height: 135,
+},
 });

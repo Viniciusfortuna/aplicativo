@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "app",
+    "name": "Cuidar+",
     "slug": "app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -24,7 +24,8 @@
       "package": "com.viniciusfortuna.app",
       "permissions": [
         "INTERNET"
-      ]
+      ],
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "favicon": "./assets/favicon.png"

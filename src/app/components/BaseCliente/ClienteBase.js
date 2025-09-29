@@ -122,6 +122,7 @@ export default function ClienteBase({
   );
 }
 
+
 const style = StyleSheet.create({
   container: {
     flex: 1,
@@ -171,3 +172,53 @@ const style = StyleSheet.create({
     elevation: 5,
   },
 });
+
+// const style = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: "#F3F3FF",
+//     alignItems: "center",
+//     paddingVertical: 20,
+//     paddingHorizontal: 15,
+//     gap: 10,
+//   },
+//   inputContainer: {
+//     width: "100%",
+//     alignItems: "flex-start",
+//     marginBottom: 15,
+//   },
+//   label: {
+//     fontSize: 16,
+//     fontWeight: "bold",
+//     color: "#333",
+//     marginBottom: 5,
+//   },
+//   inputText: {
+//     width: "100%",
+//     height: 40,
+//     borderWidth: 1,
+//     borderColor: "#ccc",
+//     borderRadius: 8,
+//     paddingHorizontal: 10,
+//     fontSize: 16,
+//     backgroundColor: "#FFF",
+//   },
+//   linkStyle: {
+//     width: 250,
+//     height: 40,
+//     backgroundColor: "#FFF",
+//     borderRadius: 12,
+//     alignItems: "center",
+//     justifyContent: "center",
+//     textAlign: "center",
+//     textAlignVertical: "center",
+//     color: "#000",
+//     fontSize: 14,
+//     fontWeight: "bold",
+//     shadowColor: "#000",
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.25,
+//     shadowRadius: 4,
+//     elevation: 5,
+//   },
+// });
