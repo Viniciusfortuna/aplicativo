@@ -241,7 +241,7 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
             setTipfor(item.tipfor);
             setNomTip(item.nomtip);
           }}
-          disabled={acao !== "INSERT"}
+          disable={acao !== "INSERT"}
         />
 
         {/* Agente */}
@@ -255,6 +255,7 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
             setCodAge(item.codage);
             setNomAge(item.nomage);
           }}
+          disable={acao !== "INSERT"} 
         />
 
         {/* Cliente */}
@@ -267,6 +268,7 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
           onChange={(item) => {
             setCodCli(item.codcli);
             setNomCli(item.nomcli)}}
+          disable={acao !== "INSERT"}
         />
 
         {/* Descrição */}
@@ -297,6 +299,8 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
             setDesSit(item.dessit);
           }}
         />
+
+        <Text style={style.label}>Perguntas Questionário</Text>
 
         {/* Perguntas Dinâmicas */}
         {perguntas.map((perg) => (
@@ -339,7 +343,7 @@ export default function FormularioBase({ acao, table, desc, msg, method, msgs, t
             </TouchableOpacity>
         )} */}
 
-        <Link href={"/forms/read/sync"} style={style.link}>Listar</Link>
+        <Link href={"/forms/read/sync"} style={style.link}>Voltar</Link>
       </ScrollView>
     </KeyboardAvoidingView>
   );

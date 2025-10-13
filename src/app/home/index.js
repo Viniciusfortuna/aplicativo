@@ -108,6 +108,9 @@ export default function App() {
       <Link style={style.buttonLink} href="/forms/read/sync">
         Listar Formulários
       </Link>
+      <Link style={style.buttonLink} href="/">
+        Sair
+      </Link>
     </View>
   );
 }
