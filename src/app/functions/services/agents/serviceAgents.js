@@ -47,12 +47,11 @@ export default async function servicesAgents(action, table, method, data, router
             if(table == tables.agentes){
                 try {
                     if(sync == 1){
-                        const result = await db.runAsync('UPDATE '+tables.agentes+' set nomage = ?, emaage = ?, cpfage = ?, telage = ?, funage = ?, datnas = ? where codage = ?', [data.nomcli, data.emacli, data.cpfcli, data.datnas, data.telcli, data.codcli]);
+                        const result = await db.runAsync('UPDATE '+tables.agentes+' set nomage = ?, emaage = ?, cpfage = ?, telage = ?, funage = ?, datnas = ? where codage = ?', [data.nomage, data.emaage, data.cpfage, data.telage, data.funage, data.datnas, data.codage]);
                     }
                     else {
-                        const result = await db.runAsync('UPDATE '+tables.agentes+' set nomage = ?, emaage = ?, cpfage = ?, telage = ?, funage = ?, datnas = ? where codage = ?', [data.nomcli, data.emacli, data.cpfcli, data.datnas, data.telcli, data.codcli]);
+                        const result = await db.runAsync('UPDATE '+tables.agentes+' set nomage = ?, emaage = ?, cpfage = ?, telage = ?, funage = ?, datnas = ? where codage = ?', [data.nomage, data.emaage, data.cpfage, data.telage, data.funage, data.datnas, data.codage]);
                     }
-                    
                 } catch (error) {
                     console.log('erro ao atualizar (serviceAgents): ' +  error);
                 }

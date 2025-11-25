@@ -10,8 +10,7 @@ export default async function SincronizaAgentes(){
     try {
         const data_off = await servicesAgents('SELECT', tables.agentes, 'ALL', '');
         data_off.forEach(async (item) =>{
-          const result = await ('GET', '', 'ID', item.codage);
-    
+          const result = await sync_agents('GET', '', 'ID', item.codage);
           if(!result){
               const result = servicesAgents('DELETE', tables.agentes, '', item.codage, '', '');
               console.log(result)
@@ -19,12 +18,14 @@ export default async function SincronizaAgentes(){
         });
         
         const data = await sync_agents('GET', '');
+        console.log('ESTOU NO DATA' + data+ "aegrreokrio")
         if (data.length > 0) {
           data.forEach((item) => {
-            console.log(item)
+            console.log(item.codage + "aegrreokrio")
             const result = servicesAgents('SELECT', tables.agentes, 'ID', item.codage, '', '');
             result.then((value)=>{
               if(value.length > 0){
+                  console.log('atualizei o agente')
                   const result = servicesAgents('UPDATE', tables.agentes, '', item, '', '');
                   console.log(result)
               }

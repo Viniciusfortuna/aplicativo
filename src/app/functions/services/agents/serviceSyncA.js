@@ -25,6 +25,8 @@ export default async function sync_agents(method, data, action, id){
         else {
             API_REQ = apiRaiz+param+'/';
         }
+
+        console.log('requisicao agentes' + API_REQ)
         try {
             const result = await fetchWithAuth(API_REQ, {
                 method:'GET',
